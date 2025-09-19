@@ -25,6 +25,7 @@ import {
   Shield,
   Heart,
   Bookmark,
+  LogOut,
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -122,28 +123,14 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-gray-100 p-6">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-gray-100 p-6 mt-16">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-            <p className="text-gray-600">
-              Manage your profile and view your contributions
-            </p>
-          </div>
-          <Button className="gap-2">
-            <Edit className="h-4 w-4" />
-            Edit Profile
-          </Button>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - User Info */}
           <div className="lg:col-span-1 space-y-6">
             <Card>
               <CardContent className="pt-6">
-                <div className="flex flex-col items-center text-center">
+                <div className="flex flex-col items-center text-center space-y-4">
                   <Avatar className="h-24 w-24 mb-4">
                     <AvatarImage src="/avatars/alex.jpg" />
                     <AvatarFallback className="text-2xl">AJ</AvatarFallback>
@@ -152,7 +139,7 @@ export default function ProfilePage() {
                   <p className="text-gray-600">{userData.username}</p>
                   <p className="text-sm text-gray-500 mt-2">{userData.bio}</p>
 
-                  <div className="flex flex-col items-start w-full mt-4 space-y-2">
+                  <div className="flex flex-col items-start w-full space-y-2">
                     <div className="flex items-center gap-2 text-sm">
                       <Mail className="h-4 w-4 text-gray-500" />
                       <span>{userData.email}</span>
@@ -165,6 +152,15 @@ export default function ProfilePage() {
                       <Calendar className="h-4 w-4 text-gray-500" />
                       <span>{userData.joinDate}</span>
                     </div>
+                  </div>
+
+                  <div className="w-full flex-col space-y-2">
+                    <Button className="w-full">
+                      <Edit className="h-4 w-4" /> Edit Profile
+                    </Button>
+                    <Button className="w-full" variant="destructive">
+                      <LogOut className="h-4 w-4" /> Log Out
+                    </Button>
                   </div>
                 </div>
               </CardContent>

@@ -23,7 +23,7 @@ import {
 
 export default function PostIdeaPage() {
   return (
-    <div className="min-h-screen bg-slate-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8 mt-16">
       <div className="max-w-3xl mx-auto px-4">
         <div className="flex items-center space-x-2 mb-6">
           <Lightbulb className="h-8 w-8 text-blue-600" />
@@ -42,11 +42,51 @@ export default function PostIdeaPage() {
             <form className="space-y-6">
               {/* Title Field */}
               <div className="space-y-2">
-                <Label htmlFor="title">Idea Title *</Label>
+                <Label>Idea Title *</Label>
                 <Input
                   id="title"
                   placeholder="A clear, concise title for your idea"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Category</Label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <Badge variant="secondary" className="px-3 py-1">
+                    Technology
+                  </Badge>
+                  <Badge variant="secondary" className="px-3 py-1">
+                    Design
+                  </Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Input placeholder="Add category (e.g., Technology, Design)" />
+                  <Button type="button" variant="outline">
+                    Add
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <Badge variant="outline" className="cursor-pointer">
+                    <Hash className="h-3 w-3 mr-1" />
+                    Business
+                  </Badge>
+                  <Badge variant="outline" className="cursor-pointer">
+                    <Hash className="h-3 w-3 mr-1" />
+                    Technology
+                  </Badge>
+                  <Badge variant="outline" className="cursor-pointer">
+                    <Hash className="h-3 w-3 mr-1" />
+                    Art
+                  </Badge>
+                  <Badge variant="outline" className="cursor-pointer">
+                    <Hash className="h-3 w-3 mr-1" />
+                    Design
+                  </Badge>
+                  <Badge variant="outline" className="cursor-pointer">
+                    <Hash className="h-3 w-3 mr-1" />
+                    Education
+                  </Badge>
+                </div>
               </div>
 
               {/* Description Field */}
@@ -56,6 +96,37 @@ export default function PostIdeaPage() {
                   id="description"
                   placeholder="Describe your idea in detail. What problem does it solve? How does it work? What makes it unique?"
                   rows={6}
+                  className="resize-none"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="how-it-works">How It Works *</Label>
+                <Textarea
+                  id="how-it-works"
+                  placeholder="Describe how your solution works in detail. What technologies are involved? How does it solve the problem?"
+                  rows={6}
+                  className="resize-none"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="benefits">Benefits *</Label>
+                <Textarea
+                  id="benefits"
+                  placeholder="List the benefits of your idea, separated by commas. Example: Reduces costs, Increases efficiency, Positive environmental impact, User-friendly"
+                  rows={6}
+                  className="resize-none"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="uniqueness">Conclusion *</Label>
+                <Textarea
+                  id="uniqueness"
+                  placeholder="Describe how your idea is unique and what differentiates it from existing solutions."
+                  rows={6}
+                  className="resize-none"
                 />
               </div>
 

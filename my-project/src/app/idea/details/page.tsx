@@ -23,7 +23,7 @@ import {
 
 export default function IdeaDetailPage() {
   return (
-    <div className="min-h-screen bg-slate-50 py-8">
+    <div className="min-h-screen bg-slate-50 py-8 mt-16">
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-3 space-y-6">
@@ -71,32 +71,40 @@ export default function IdeaDetailPage() {
             <CardContent className="space-y-6">
               {/* Idea Description */}
               <div className="prose max-w-none">
-                <p>
+                <p className="text-lg">
                   Smart bins that automatically sort recyclables using computer
                   vision and machine learning to improve recycling efficiency
                   and reduce contamination in recycling streams.
                 </p>
 
-                <h3>How It Works</h3>
-                <p>
+                <h3 className="text-2xl font-semibold mt-6 mb-3">
+                  How It Works
+                </h3>
+                <p className="text-lg">
                   The system uses cameras and sensors to identify different
                   types of materials (plastic, glass, paper, metal) as they are
                   disposed of. A machine learning algorithm classifies each item
                   and directs it to the appropriate compartment within the bin.
                 </p>
 
-                <h3>Benefits</h3>
-                <ul>
-                  <li>Reduces recycling contamination by up to 80%</li>
-                  <li>Increases recycling rates through better sorting</li>
-                  <li>Provides data analytics on recycling patterns</li>
-                  <li>
+                <h3 className="text-2xl font-semibold mt-6 mb-3">Benefits</h3>
+                <ul className="list-disc pl-5">
+                  <li className="text-lg">
+                    Reduces recycling contamination by up to 80%
+                  </li>
+                  <li className="text-lg">
+                    Increases recycling rates through better sorting
+                  </li>
+                  <li className="text-lg">
+                    Provides data analytics on recycling patterns
+                  </li>
+                  <li className="text-lg">
                     Educational component helps users learn proper recycling
                   </li>
                 </ul>
 
-                <h3>Next Steps</h3>
-                <p>
+                <h3 className="text-2xl font-semibold mt-6 mb-3">Next Steps</h3>
+                <p className="text-lg">
                   I'm looking for collaborators with expertise in computer
                   vision, hardware design, and environmental science to help
                   develop a prototype and pilot program.
