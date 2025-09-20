@@ -1,4 +1,4 @@
-export const tags = [
+export const listTags = [
   "AI",
   "Machine Learning",
   "Blockchain",

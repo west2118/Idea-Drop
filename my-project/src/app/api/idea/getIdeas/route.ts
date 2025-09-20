@@ -4,9 +4,7 @@ import Idea from "@/models/idea.model";
 import User from "@/models/user.model";
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
-  const { title, categories, attachment, visibility, tags, content } =
-    await req.json();
+export async function GET(req: Request) {
   const result = await verifyToken(req);
 
   if (!result.success) return result.response;
@@ -24,25 +22,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const newIdeaData: any = {
-      user_id: user._id,
-      title,
-      categories,
-      visibility,
-      tags,
-      content,
-    };
+    const ideas = await Idea.find({ user_id: { $ne: user._id } });
 
-    if (attachment) {
-      newIdeaData.attachment = attachment;
-    }
-
-    const newIdea = await Idea.create(newIdeaData);
-
-    return NextResponse.json(
-      { message: "Idea posted successfully!", newIdea },
-      { status: 201 }
-    );
+    return NextResponse.json({ ideas }, { status: 201 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(

@@ -30,10 +30,21 @@ import {
   Grid,
   List,
 } from "lucide-react";
+import DashboardIdeaCard from "@/components/app/dashboard/DashboardIdeaCard";
+import { useQuery } from "@tanstack/react-query";
+import { useUserStore } from "@/stores/useUserStore";
+import { fetchData } from "@/lib/utils";
 
 export default function Dashboard() {
+  const token = useUserStore((state) => state.userToken);
   const [activeTab, setActiveTab] = useState("latest");
   const [viewMode, setViewMode] = useState("grid");
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["ideas"],
+    queryFn: fetchData("/api/idea/getIdeas", token),
+    enabled: !!token,
+  });
 
   // Mock data for ideas
   const ideas = [
@@ -138,44 +149,11 @@ export default function Dashboard() {
     { name: "Food Waste App", members: 5, progress: 78 },
   ];
 
+  console.log("IDEAS: ", data?.ideas);
+
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 p-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Lightbulb className="h-6 w-6 text-blue-600" />
-            <span className="text-xl font-bold">IdeaDrop</span>
-          </div>
-
-          <div className="flex-1 max-w-2xl mx-8">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-              <Input
-                placeholder="Search ideas, tags, or people..."
-                className="pl-10 pr-4 py-2 w-full"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </Button>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              New Idea
-            </Button>
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/avatars/user.jpg" />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-4 gap-6 mt-18">
         {/* Main Content */}
         <div className="lg:col-span-3">
           <div className="bg-white rounded-lg border border-slate-200 p-6 mb-6">
@@ -220,65 +198,7 @@ export default function Dashboard() {
                       : "space-y-6"
                   }>
                   {filteredIdeas.map((idea) => (
-                    <Card
-                      key={idea.id}
-                      className="overflow-hidden hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-3">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-lg">
-                              {idea.title}
-                            </CardTitle>
-                            <CardDescription className="mt-2 flex items-center">
-                              <Avatar className="h-6 w-6 mr-2">
-                                <AvatarFallback>
-                                  {idea.authorInitials}
-                                </AvatarFallback>
-                              </Avatar>
-                              {idea.author} • {idea.time}
-                            </CardDescription>
-                          </div>
-                          {idea.trending && (
-                            <Badge
-                              variant="outline"
-                              className="bg-orange-50 text-orange-700 border-orange-200 flex items-center">
-                              <TrendingUp className="h-3 w-3 mr-1" />
-                              Trending
-                            </Badge>
-                          )}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pb-3">
-                        <p className="text-slate-600 text-sm mb-3">
-                          {idea.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {idea.tags.map((tag, index) => (
-                            <Badge
-                              key={index}
-                              variant="secondary"
-                              className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                      <CardFooter className="flex justify-between bg-slate-50 py-3">
-                        <div className="flex items-center text-slate-500">
-                          <ThumbsUp className="h-4 w-4 mr-1" />
-                          <span className="text-sm">{idea.upvotes}</span>
-                        </div>
-                        <div className="flex items-center text-slate-500">
-                          <MessageSquare className="h-4 w-4 mr-1" />
-                          <span className="text-sm">
-                            {idea.comments} comments
-                          </span>
-                        </div>
-                        <Button variant="ghost" size="sm">
-                          View Details
-                        </Button>
-                      </CardFooter>
-                    </Card>
+                    <DashboardIdeaCard key={idea.title} idea={idea} />
                   ))}
                 </div>
               </TabsContent>
