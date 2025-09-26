@@ -1,5 +1,6 @@
 import axios from "axios";
 import { clsx, type ClassValue } from "clsx";
+import { formatDistance } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -58,3 +59,7 @@ export const fetchData =
       throw new Error(error.response?.data?.message || "Error fetching data");
     }
   };
+
+export const formatTimeAgo = (date: string) => {
+  return formatDistance(date, new Date(), { addSuffix: true });
+};

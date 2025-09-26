@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,10 +22,30 @@ import {
   Clock,
   Eye,
 } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useUserStore } from "@/stores/useUserStore";
+import { useQuery } from "@tanstack/react-query";
+import { IdeaType } from "@/lib/types";
+import { fetchData, formatTimeAgo } from "@/lib/utils";
+
+type Idea = {
+  idea: IdeaType;
+};
 
 export default function IdeaDetailPage() {
+  const { id } = useParams();
+  const token = useUserStore((state) => state.userToken);
+
+  const { data, error, isLoading } = useQuery<Idea>({
+    queryKey: ["idea", id],
+    queryFn: fetchData(`/api/idea/${id}`, token),
+    enabled: !!token && !!id,
+  });
+
+  const idea = data?.idea;
+
   return (
-    <div className="min-h-screen bg-slate-50 py-8 mt-16">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-3 space-y-6">
@@ -34,7 +56,7 @@ export default function IdeaDetailPage() {
                 <Badge
                   variant="outline"
                   className="bg-blue-50 text-blue-700 border-blue-200">
-                  Technology
+                  {idea?.categories}
                 </Badge>
                 <div className="flex space-x-2">
                   <Button variant="ghost" size="sm">
@@ -48,19 +70,21 @@ export default function IdeaDetailPage() {
                   </Button>
                 </div>
               </div>
-              <CardTitle className="text-3xl">
-                AI-Powered Recycling System
-              </CardTitle>
+              <CardTitle className="text-3xl">{idea?.title}</CardTitle>
               <CardDescription className="flex items-center space-x-4 mt-2">
                 <div className="flex items-center">
                   <Avatar className="h-6 w-6 mr-2">
-                    <AvatarFallback>AJ</AvatarFallback>
+                    <AvatarFallback>{`${idea?.user_id.firstName.charAt(
+                      0
+                    )}${idea?.user_id.lastName.charAt(0)}`}</AvatarFallback>
                   </Avatar>
-                  <span>Alex Johnson</span>
+                  <span>{`${idea?.user_id.firstName} ${idea?.user_id.lastName}`}</span>
                 </div>
                 <div className="flex items-center">
                   <Clock className="h-4 w-4 mr-1" />
-                  <span>Posted 2 days ago</span>
+                  <span>
+                    {idea?.createdAt && formatTimeAgo(idea?.createdAt)}
+                  </span>
                 </div>
                 <div className="flex items-center">
                   <Eye className="h-4 w-4 mr-1" />
@@ -71,54 +95,33 @@ export default function IdeaDetailPage() {
             <CardContent className="space-y-6">
               {/* Idea Description */}
               <div className="prose max-w-none">
-                <p className="text-lg">
-                  Smart bins that automatically sort recyclables using computer
-                  vision and machine learning to improve recycling efficiency
-                  and reduce contamination in recycling streams.
-                </p>
+                <p className="text-lg">{idea?.content.description}</p>
 
                 <h3 className="text-2xl font-semibold mt-6 mb-3">
                   How It Works
                 </h3>
-                <p className="text-lg">
-                  The system uses cameras and sensors to identify different
-                  types of materials (plastic, glass, paper, metal) as they are
-                  disposed of. A machine learning algorithm classifies each item
-                  and directs it to the appropriate compartment within the bin.
-                </p>
+                <p className="text-lg">{idea?.content.works}</p>
 
                 <h3 className="text-2xl font-semibold mt-6 mb-3">Benefits</h3>
                 <ul className="list-disc pl-5">
-                  <li className="text-lg">
-                    Reduces recycling contamination by up to 80%
-                  </li>
-                  <li className="text-lg">
-                    Increases recycling rates through better sorting
-                  </li>
-                  <li className="text-lg">
-                    Provides data analytics on recycling patterns
-                  </li>
-                  <li className="text-lg">
-                    Educational component helps users learn proper recycling
-                  </li>
+                  {idea?.content.benefits.split(",").map((benefit, index) => (
+                    <li key={index} className="text-lg">
+                      {benefit}
+                    </li>
+                  ))}
                 </ul>
 
                 <h3 className="text-2xl font-semibold mt-6 mb-3">Next Steps</h3>
-                <p className="text-lg">
-                  I'm looking for collaborators with expertise in computer
-                  vision, hardware design, and environmental science to help
-                  develop a prototype and pilot program.
-                </p>
+                <p className="text-lg">{idea?.content.conclusion}</p>
               </div>
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 pt-4">
-                <Badge variant="secondary">AI</Badge>
-                <Badge variant="secondary">Machine Learning</Badge>
-                <Badge variant="secondary">Sustainability</Badge>
-                <Badge variant="secondary">Recycling</Badge>
-                <Badge variant="secondary">Computer Vision</Badge>
-                <Badge variant="secondary">IoT</Badge>
+                {idea?.tags.map((tag) => (
+                  <Badge key={tag} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
               </div>
 
               {/* Stats and Actions */}

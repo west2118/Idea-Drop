@@ -34,103 +34,22 @@ import DashboardIdeaCard from "@/components/app/dashboard/DashboardIdeaCard";
 import { useQuery } from "@tanstack/react-query";
 import { useUserStore } from "@/stores/useUserStore";
 import { fetchData } from "@/lib/utils";
+import { IdeaType } from "@/lib/types";
+
+type Idea = {
+  ideas: IdeaType[];
+};
 
 export default function Dashboard() {
   const token = useUserStore((state) => state.userToken);
   const [activeTab, setActiveTab] = useState("latest");
   const [viewMode, setViewMode] = useState("grid");
 
-  const { data, error, isLoading } = useQuery({
+  const { data, error, isLoading } = useQuery<Idea>({
     queryKey: ["ideas"],
     queryFn: fetchData("/api/idea/getIdeas", token),
     enabled: !!token,
   });
-
-  // Mock data for ideas
-  const ideas = [
-    {
-      id: 1,
-      title: "AI-Powered Recycling System",
-      description:
-        "Smart bins that automatically sort recyclables using computer vision and machine learning to improve recycling efficiency.",
-      author: "Alex Johnson",
-      authorInitials: "AJ",
-      tags: ["AI", "Sustainability", "Tech"],
-      upvotes: 245,
-      comments: 32,
-      time: "2 hours ago",
-      trending: true,
-    },
-    {
-      id: 2,
-      title: "Community Skill Exchange Platform",
-      description:
-        "A local platform for trading skills and knowledge without monetary exchange to build stronger communities.",
-      author: "Samantha Lee",
-      authorInitials: "SL",
-      tags: ["Community", "Education", "Social"],
-      upvotes: 189,
-      comments: 41,
-      time: "5 hours ago",
-      trending: true,
-    },
-    {
-      id: 3,
-      title: "Modular Urban Gardening System",
-      description:
-        "Space-efficient gardening solutions for apartment dwellers to grow their own food in small spaces.",
-      author: "Michael Chen",
-      authorInitials: "MC",
-      tags: ["Sustainability", "Design", "Food"],
-      upvotes: 176,
-      comments: 28,
-      time: "1 day ago",
-      trending: false,
-    },
-    {
-      id: 4,
-      title: "Accessibility-First Web Design Tool",
-      description:
-        "Design tool that prioritizes and tests for accessibility from the start of the design process.",
-      author: "Rachel Kim",
-      authorInitials: "RK",
-      tags: ["Design", "Tech", "Accessibility"],
-      upvotes: 152,
-      comments: 19,
-      time: "1 day ago",
-      trending: true,
-    },
-    {
-      id: 5,
-      title: "Virtual Reality History Education",
-      description:
-        "Immersive VR experiences that allow students to explore historical events and places firsthand.",
-      author: "David Wilson",
-      authorInitials: "DW",
-      tags: ["Education", "VR", "Tech"],
-      upvotes: 132,
-      comments: 24,
-      time: "2 days ago",
-      trending: false,
-    },
-    {
-      id: 6,
-      title: "Food Waste Reduction App",
-      description:
-        "App that connects restaurants with surplus food to local shelters and food banks in real-time.",
-      author: "Maria Garcia",
-      authorInitials: "MG",
-      tags: ["Sustainability", "Food", "Social"],
-      upvotes: 121,
-      comments: 17,
-      time: "3 days ago",
-      trending: false,
-    },
-  ];
-
-  // Filter ideas based on active tab
-  const filteredIdeas =
-    activeTab === "trending" ? ideas.filter((idea) => idea.trending) : ideas;
 
   // Categories for sidebar
   const categories = [
@@ -149,11 +68,9 @@ export default function Dashboard() {
     { name: "Food Waste App", members: 5, progress: 78 },
   ];
 
-  console.log("IDEAS: ", data?.ideas);
-
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-4 gap-6 mt-18">
+      <div className="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-3">
           <div className="bg-white rounded-lg border border-slate-200 p-6 mb-6">
@@ -197,7 +114,7 @@ export default function Dashboard() {
                       ? "grid grid-cols-1 md:grid-cols-2 gap-6"
                       : "space-y-6"
                   }>
-                  {filteredIdeas.map((idea) => (
+                  {data?.ideas.map((idea: any) => (
                     <DashboardIdeaCard key={idea.title} idea={idea} />
                   ))}
                 </div>
@@ -239,36 +156,6 @@ export default function Dashboard() {
             </CardFooter>
           </Card>
 
-          {/* Categories */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center">
-                <Folder className="h-5 w-5 mr-2 text-green-600" />
-                Categories
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {categories.map((category, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center p-2 rounded-md hover:bg-slate-100 cursor-pointer">
-                    <div className="flex items-center">
-                      <span className="mr-2">{category.icon}</span>
-                      <span className="text-sm">{category.name}</span>
-                    </div>
-                    <Badge variant="outline">{category.count}</Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" size="sm" className="w-full">
-                Explore Categories
-              </Button>
-            </CardFooter>
-          </Card>
-
           {/* Collaborations */}
           <Card>
             <CardHeader className="pb-3">
@@ -305,28 +192,6 @@ export default function Dashboard() {
                 View All Projects
               </Button>
             </CardFooter>
-          </Card>
-
-          {/* Trending Tags */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2 text-orange-600" />
-                Trending Tags
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary">AI</Badge>
-                <Badge variant="secondary">Sustainability</Badge>
-                <Badge variant="secondary">Web3</Badge>
-                <Badge variant="secondary">VR</Badge>
-                <Badge variant="secondary">Education</Badge>
-                <Badge variant="secondary">HealthTech</Badge>
-                <Badge variant="secondary">FinTech</Badge>
-                <Badge variant="secondary">IoT</Badge>
-              </div>
-            </CardContent>
           </Card>
         </div>
       </div>
