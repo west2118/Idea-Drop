@@ -22,6 +22,7 @@ import {
   Lock,
   Hash,
   X,
+  Loader,
 } from "lucide-react";
 import { useForm } from "@/hooks/useForm";
 import { useState } from "react";
@@ -126,7 +127,7 @@ export default function PostIdeaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 mt-16">
+    <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-3xl mx-auto px-4">
         <div className="flex items-center space-x-2 mb-6">
           <Lightbulb className="h-8 w-8 text-blue-600" />
@@ -347,14 +348,23 @@ export default function PostIdeaPage() {
               {/* Submit Button */}
               <div className="flex justify-between align-center pt-4">
                 <Button
+                  disabled={isLoading}
                   type="button"
                   size="lg"
                   variant="outline"
                   className="px-8">
                   Cancel
                 </Button>
-                <Button type="submit" size="lg" className="px-8">
-                  <Lightbulb className="h-5 w-5" />
+                <Button
+                  disabled={isLoading}
+                  type="submit"
+                  size="lg"
+                  className="px-8">
+                  {isLoading ? (
+                    <Loader className="animate-spin h-5 w-5" />
+                  ) : (
+                    <Lightbulb className="h-5 w-5" />
+                  )}
                   Drop Idea
                 </Button>
               </div>
