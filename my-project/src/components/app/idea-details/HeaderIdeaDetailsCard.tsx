@@ -23,7 +23,7 @@ import {
   Eye,
   BookmarkCheck,
 } from "lucide-react";
-import { IdeaType } from "@/lib/types";
+import { CollaborationType, IdeaType } from "@/lib/types";
 import { formatTimeAgo } from "@/lib/utils";
 import { useState } from "react";
 import axios from "axios";
@@ -36,6 +36,7 @@ type HeaderIdeaDetailsProps = {
   isReacted: boolean | null;
   reactions: number;
   toggleComment: () => void;
+  collaboration: CollaborationType | null;
 };
 
 const HeaderIdeaDetails = ({
@@ -44,7 +45,9 @@ const HeaderIdeaDetails = ({
   isReacted,
   reactions,
   toggleComment,
+  collaboration,
 }: HeaderIdeaDetailsProps) => {
+  const user = useUserStore((state) => state.user);
   const token = useUserStore((state) => state.userToken);
   const [isFavorite, setIsFavorite] = useState(isFavorited);
   const [isReact, setIsReact] = useState(isReacted);
@@ -105,6 +108,8 @@ const HeaderIdeaDetails = ({
       toast.error(error.response?.data?.message || error.message);
     }
   };
+
+  console.log("IDEA DETAILS", collaboration);
 
   return (
     <Card>
@@ -213,10 +218,17 @@ const HeaderIdeaDetails = ({
             </div>
           </div>
 
-          <Button className="bg-green-600 hover:bg-green-700">
-            <Users className="h-4 w-4 mr-2" />
-            Join This Idea
-          </Button>
+          {idea?.user_id._id === user?._id ? (
+            <Button className="bg-green-600 hover:bg-green-700">
+              <Users className="h-4 w-4 mr-2" />
+              Create Collaboration
+            </Button>
+          ) : (
+            <Button className="bg-green-600 hover:bg-green-700">
+              <Users className="h-4 w-4 mr-2" />
+              Join This Idea
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

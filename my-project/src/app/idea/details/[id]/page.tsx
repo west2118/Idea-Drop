@@ -1,21 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Lightbulb, ThumbsUp } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useUserStore } from "@/stores/useUserStore";
 import { useQuery } from "@tanstack/react-query";
-import { IdeaType } from "@/lib/types";
+import { CollaborationType, IdeaType } from "@/lib/types";
 import { fetchData, formatTimeAgo } from "@/lib/utils";
 import HeaderIdeaDetails from "@/components/app/idea-details/HeaderIdeaDetailsCard";
 import HeaderIdeaDetailsSkeleton from "@/components/app/skeletons/HeaderIdeaDetailsSkeleton";
@@ -25,12 +13,18 @@ import { useState } from "react";
 import AuthorProfileIdeaDetailCard from "@/components/app/idea-details/AuthorProfileIdeaDetailCard";
 import RelatedIdeaDetailCard from "@/components/app/idea-details/RelatedIdeaDetailCard";
 import CollaborationIdeaDetailCard from "@/components/app/idea-details/CollaborationIdeaDetailCard";
+import AuthorProfileIdeaDetailSkeleton from "@/components/app/skeletons/AuthorProfileIdeaDetailSkeleton";
+import RelatedIdeaDetailCardSkeleton from "@/components/app/skeletons/RelatedIdeaDetailCardSkeleton";
+import CollaborationIdeaDetailCardSkeleton from "@/components/app/skeletons/CollaborationIdeaDetailCardSkeleton";
 
 type IdeaDetails = {
   idea: IdeaType;
   isFavorited: boolean;
   isReacted: boolean;
   reactions: number;
+  ownerTotalIdeas: number;
+  relatedIdeas: IdeaType[] | [];
+  collaboration: CollaborationType;
 };
 
 export default function IdeaDetailPage() {
@@ -63,6 +57,7 @@ export default function IdeaDetailPage() {
               isReacted={data?.isReacted ?? null}
               reactions={data?.reactions ?? 0}
               toggleComment={handleToggleShowComment}
+              collaboration={data?.collaboration ?? null}
             />
           </WithSkeleton>
 
@@ -73,13 +68,34 @@ export default function IdeaDetailPage() {
         {/* Sidebar */}
         <div className="lg:col-span-1 space-y-6">
           {/* Author Profile */}
-          <AuthorProfileIdeaDetailCard />
+          <WithSkeleton
+            isLoading={isLoading}
+            skeleton={<AuthorProfileIdeaDetailSkeleton />}>
+            <AuthorProfileIdeaDetailCard
+              ownerTotalIdeas={data?.ownerTotalIdeas ?? 0}
+              ownerDetails={data?.idea.user_id}
+            />
+          </WithSkeleton>
 
           {/* Related Ideas */}
-          <RelatedIdeaDetailCard />
+          <WithSkeleton
+            isLoading={isLoading}
+            skeleton={<RelatedIdeaDetailCardSkeleton />}>
+            {data?.relatedIdeas && data?.relatedIdeas.length > 0 && (
+              <RelatedIdeaDetailCard relatedIdeas={data?.relatedIdeas} />
+            )}
+          </WithSkeleton>
 
           {/* Collaboration Info */}
-          <CollaborationIdeaDetailCard />
+          <WithSkeleton
+            isLoading={isLoading}
+            skeleton={<CollaborationIdeaDetailCardSkeleton />}>
+            {data?.collaboration && (
+              <CollaborationIdeaDetailCard
+                collaboration={data?.collaboration}
+              />
+            )}
+          </WithSkeleton>
         </div>
       </div>
     </div>

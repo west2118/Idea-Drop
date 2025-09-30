@@ -4,6 +4,8 @@ export type IdeaType = {
     _id: string;
     firstName: string;
     lastName: string;
+    bio: string;
+    position: string;
   };
   title: string;
   description: string;
@@ -17,6 +19,27 @@ export type IdeaType = {
   categories: string[];
   tags: string[];
   visibility: "public" | "private" | "only me";
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
+
+export type CollaborationType = {
+  _id: string;
+  idea_id: string;
+  owner: string;
+  collaboration?: {
+    user: string;
+    role: "owner" | "collaborator";
+    joinedAt: string;
+  }[];
+  request?: {
+    user: string;
+    status: "pending" | "accepted" | "declined";
+    requestedAt: string;
+  }[];
+  lookingFor?: string;
+  notes?: string;
   createdAt: string;
   updatedAt: string;
   __v: number;

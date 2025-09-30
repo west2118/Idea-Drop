@@ -35,6 +35,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useUserStore } from "@/stores/useUserStore";
 import { fetchData } from "@/lib/utils";
 import { IdeaType } from "@/lib/types";
+import MyIdeaCardDashboard from "@/components/app/dashboard/MyIdeaCardDashboard";
+import CollaborationsCardDashboard from "@/components/app/dashboard/CollaborationsCardDashboard";
 
 type Idea = {
   ideas: IdeaType[];
@@ -59,13 +61,6 @@ export default function Dashboard() {
     { name: "Design", count: 28, icon: "🎨" },
     { name: "Social Impact", count: 25, icon: "🤝" },
     { name: "Health", count: 19, icon: "❤️" },
-  ];
-
-  // My active collaborations
-  const collaborations = [
-    { name: "Urban Garden Project", members: 4, progress: 65 },
-    { name: "Accessibility Tool Dev", members: 3, progress: 42 },
-    { name: "Food Waste App", members: 5, progress: 78 },
   ];
 
   return (
@@ -126,73 +121,10 @@ export default function Dashboard() {
         {/* Sidebar */}
         <div className="lg:col-span-1 space-y-6">
           {/* My Ideas */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center">
-                <User className="h-5 w-5 mr-2 text-blue-600" />
-                My Ideas
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pb-3">
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-2 rounded-md hover:bg-slate-100 cursor-pointer">
-                  <span className="text-sm">Draft Ideas</span>
-                  <Badge variant="secondary">3</Badge>
-                </div>
-                <div className="flex justify-between items-center p-2 rounded-md hover:bg-slate-100 cursor-pointer">
-                  <span className="text-sm">Published</span>
-                  <Badge variant="secondary">7</Badge>
-                </div>
-                <div className="flex justify-between items-center p-2 rounded-md hover:bg-slate-100 cursor-pointer">
-                  <span className="text-sm">Collaborating</span>
-                  <Badge variant="secondary">2</Badge>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" size="sm" className="w-full">
-                View All Ideas
-              </Button>
-            </CardFooter>
-          </Card>
+          <MyIdeaCardDashboard />
 
           {/* Collaborations */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center">
-                <Users className="h-5 w-5 mr-2 text-purple-600" />
-                My Collaborations
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {collaborations.map((project, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">
-                        {project.name}
-                      </span>
-                      <Badge variant="outline">{project.members} members</Badge>
-                    </div>
-                    <div className="w-full bg-slate-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${project.progress}%` }}></div>
-                    </div>
-                    <div className="flex justify-between text-xs text-slate-500">
-                      <span>Progress</span>
-                      <span>{project.progress}%</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" size="sm" className="w-full">
-                View All Projects
-              </Button>
-            </CardFooter>
-          </Card>
+          <CollaborationsCardDashboard />
         </div>
       </div>
     </div>

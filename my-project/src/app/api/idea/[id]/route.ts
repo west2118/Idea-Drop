@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/db";
 import { verifyToken } from "@/middleware/verifyToken";
+import Collaboration from "@/models/collaboration.model";
 import Favorite from "@/models/favorite.model";
 import Idea from "@/models/idea.model";
 import Reaction from "@/models/reaction.model";
@@ -31,11 +32,25 @@ export async function GET(
 
     const idea = await Idea.findById(id).populate(
       "user_id",
-      "firstName lastName"
+      "firstName lastName bio position"
     );
     if (!idea) {
       return NextResponse.json({ message: "Idea not found" }, { status: 404 });
     }
+
+    const collaboration = await Collaboration.findOne({
+      idea_id: id,
+    });
+
+    const ownerTotalIdeas = await Idea.countDocuments({
+      user_id: idea?.user_id._id,
+    });
+
+    const relatedIdeas = await Idea.find({
+      _id: { $ne: id },
+      tags: { $in: idea?.tags },
+      categories: { $in: idea?.categories },
+    }).limit(3);
 
     const isFavorited = await Favorite.exists({
       user_id: user._id,
@@ -52,7 +67,15 @@ export async function GET(
     });
 
     return NextResponse.json(
-      { idea, isFavorited: !!isFavorited, isReacted: !!isReacted, reactions },
+      {
+        idea,
+        isFavorited: !!isFavorited,
+        isReacted: !!isReacted,
+        reactions,
+        ownerTotalIdeas,
+        relatedIdeas,
+        collaboration,
+      },
       { status: 201 }
     );
   } catch (error) {

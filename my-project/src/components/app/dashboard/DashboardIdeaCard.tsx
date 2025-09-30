@@ -20,31 +20,29 @@ const DashboardIdeaCard = ({ idea }: { idea: any }) => {
   const router = useRouter();
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <Card className="flex flex-col h-full overflow-hidden hover:shadow-md transition-shadow">
       <CardHeader>
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg">{idea?.title}</CardTitle>
-            <CardDescription className="mt-2 flex items-center justify-between">
-              <div className="flex items-center">
-                <Avatar className="h-6 w-6 mr-2">
-                  <AvatarFallback>{`${idea?.user_id.firstName
-                    .charAt(0)
-                    .toUpperCase()}${idea?.user_id.lastName
-                    .charAt(0)
-                    .toUpperCase()}`}</AvatarFallback>
-                </Avatar>
-                {`${idea?.user_id.firstName} ${
-                  idea?.user_id.lastName
-                } • ${formatTimeAgo(idea?.createdAt)}`}
-              </div>
-              <div>
-                <Badge variant="default" className="text-xs">
-                  {idea?.categories[0]}
-                </Badge>
-              </div>
-            </CardDescription>
-          </div>
+        <div className="flex-col justify-between items-start">
+          <CardTitle className="text-lg">{idea?.title}</CardTitle>
+          <CardDescription className="mt-2 flex items-center justify-between">
+            <div className="flex items-center">
+              <Avatar className="h-6 w-6 mr-2">
+                <AvatarFallback>{`${idea?.user_id.firstName
+                  .charAt(0)
+                  .toUpperCase()}${idea?.user_id.lastName
+                  .charAt(0)
+                  .toUpperCase()}`}</AvatarFallback>
+              </Avatar>
+              {`${idea?.user_id.firstName} ${
+                idea?.user_id.lastName
+              } • ${formatTimeAgo(idea?.createdAt)}`}
+            </div>
+            <div>
+              <Badge variant="default" className="text-xs">
+                {idea?.categories[0]}
+              </Badge>
+            </div>
+          </CardDescription>
           {idea?.trending && (
             <Badge
               variant="outline"
@@ -55,7 +53,7 @@ const DashboardIdeaCard = ({ idea }: { idea: any }) => {
           )}
         </div>
       </CardHeader>
-      <CardContent className="pb-3">
+      <CardContent className="pb-3 flex-grow">
         <p className="text-slate-600 text-sm mb-3">
           {idea?.content.description.split(".")[0]}
         </p>
@@ -67,7 +65,7 @@ const DashboardIdeaCard = ({ idea }: { idea: any }) => {
           ))}
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between bg-slate-50 py-3">
+      <CardFooter className="flex justify-between bg-slate-50 py-3 mt-auto">
         <div className="flex items-center text-slate-500">
           <ThumbsUp className="h-4 w-4 mr-1" />
           <span className="text-sm">{idea?.upvotes ?? 0}</span>

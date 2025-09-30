@@ -3,7 +3,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Lightbulb } from "lucide-react";
 
-const AuthorProfileIdeaDetailCard = () => {
+type AuthorProfileIdeaDetailCardProps = {
+  ownerTotalIdeas: number;
+  ownerDetails:
+    | {
+        bio: string;
+        firstName: string;
+        lastName: string;
+        position: string;
+        _id: string;
+      }
+    | undefined;
+};
+
+const AuthorProfileIdeaDetailCard = ({
+  ownerTotalIdeas,
+  ownerDetails,
+}: AuthorProfileIdeaDetailCardProps) => {
+  console.log("Owner Details: ", ownerDetails);
+
   return (
     <Card>
       <CardHeader>
@@ -15,20 +33,17 @@ const AuthorProfileIdeaDetailCard = () => {
             <AvatarFallback className="text-lg">AJ</AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-semibold">Alex Johnson</h3>
-            <p className="text-sm text-slate-600">Environmental Engineer</p>
+            <h3 className="font-semibold">{`${ownerDetails?.firstName} ${ownerDetails?.lastName}`}</h3>
+            <p className="text-sm text-slate-600">{ownerDetails?.position}</p>
           </div>
         </div>
-        <p className="text-sm text-slate-600">
-          Passionate about using technology to solve environmental challenges.
-          Previously worked on water purification systems.
-        </p>
+        <p className="text-sm text-slate-600">{ownerDetails?.bio}</p>
         <div className="flex items-center text-sm text-slate-500">
           <Lightbulb className="h-4 w-4 mr-1" />
-          <span>12 ideas shared</span>
+          <span>{ownerTotalIdeas} ideas shared</span>
         </div>
         <Button variant="outline" className="w-full">
-          Follow Author
+          View Author
         </Button>
       </CardContent>
     </Card>
