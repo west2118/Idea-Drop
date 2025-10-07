@@ -29,6 +29,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useUserStore } from "@/stores/useUserStore";
+import { useRouter } from "next/navigation";
 
 type HeaderIdeaDetailsProps = {
   idea: IdeaType | null;
@@ -37,6 +38,8 @@ type HeaderIdeaDetailsProps = {
   reactions: number;
   toggleComment: () => void;
   collaboration: CollaborationType | null;
+  handleOpenModalCreate: () => void;
+  handleOpenModalRequest: () => void;
 };
 
 const HeaderIdeaDetails = ({
@@ -46,7 +49,10 @@ const HeaderIdeaDetails = ({
   reactions,
   toggleComment,
   collaboration,
+  handleOpenModalCreate,
+  handleOpenModalRequest,
 }: HeaderIdeaDetailsProps) => {
+  const router = useRouter();
   const user = useUserStore((state) => state.user);
   const token = useUserStore((state) => state.userToken);
   const [isFavorite, setIsFavorite] = useState(isFavorited);
@@ -108,8 +114,6 @@ const HeaderIdeaDetails = ({
       toast.error(error.response?.data?.message || error.message);
     }
   };
-
-  console.log("IDEA DETAILS", collaboration);
 
   return (
     <Card>
@@ -219,15 +223,31 @@ const HeaderIdeaDetails = ({
           </div>
 
           {idea?.user_id._id === user?._id ? (
-            <Button className="bg-green-600 hover:bg-green-700">
-              <Users className="h-4 w-4 mr-2" />
-              Create Collaboration
+            // 👤 Owner
+            collaboration ? (
+              <Button
+                onClick={() => router.push(`/collaboration/${idea?._id}`)}
+                className="bg-green-600 hover:bg-green-700">
+                <Users className="h-4 w-4" />
+                View Collaboration
+              </Button>
+            ) : (
+              <Button
+                onClick={handleOpenModalCreate}
+                className="bg-blue-600 hover:bg-blue-700">
+                <Users className="h-4 w-4" />
+                Create Collaboration
+              </Button>
+            )
+          ) : collaboration ? (
+            <Button
+              onClick={handleOpenModalRequest}
+              className="hover:bg-blue-700 bg-blue-600">
+              <Users className="h-4 w-4" />
+              Request Collaboration
             </Button>
           ) : (
-            <Button className="bg-green-600 hover:bg-green-700">
-              <Users className="h-4 w-4 mr-2" />
-              Join This Idea
-            </Button>
+            ""
           )}
         </div>
       </CardContent>

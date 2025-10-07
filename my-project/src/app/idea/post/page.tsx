@@ -37,9 +37,7 @@ import axios from "axios";
 import { useUserStore } from "@/stores/useUserStore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-
-const categoryLimit = 2;
-const tagLimit = 5;
+import { categoryLimit, tagLimit } from "@/lib/constants";
 
 type FormData = {
   title: string;
@@ -72,10 +70,14 @@ export default function PostIdeaPage() {
     useImageUploader<ImageType>(["attachment"]);
 
   const handleCategoryAdd = () => {
+    if (categories.includes(categoryAdd)) return;
+
     handleAdd(categoryAdd, setCategoryAdd, setCategories, categoryLimit);
   };
 
   const handleTagAdd = () => {
+    if (tags.includes(tagAdd)) return;
+
     handleAdd(tagAdd, setTagAdd, setTags, tagLimit);
   };
 
@@ -182,6 +184,7 @@ export default function PostIdeaPage() {
                 )}
                 <div className="flex gap-2">
                   <Input
+                    value={categoryAdd}
                     onChange={(e) => setCategoryAdd(e.target.value)}
                     placeholder="Add category (e.g., Technology, Design)"
                   />
@@ -289,6 +292,7 @@ export default function PostIdeaPage() {
                 )}
                 <div className="flex gap-2">
                   <Input
+                    value={tagAdd}
                     onChange={(e) => setTagAdd(e.target.value)}
                     placeholder="Add tags (e.g., Technology, Design)"
                   />

@@ -26,9 +26,9 @@ export type IdeaType = {
 
 export type CollaborationType = {
   _id: string;
-  idea_id: string;
+  idea_id: string | { _id: string; title: string };
   owner: string;
-  collaboration?: {
+  collaborations?: {
     user: string;
     role: "owner" | "collaborator";
     joinedAt: string;
@@ -38,8 +38,9 @@ export type CollaborationType = {
     status: "pending" | "accepted" | "declined";
     requestedAt: string;
   }[];
-  lookingFor?: string;
+  lookingFor?: string[];
   notes?: string;
+  status: boolean;
   createdAt: string;
   updatedAt: string;
   __v: number;

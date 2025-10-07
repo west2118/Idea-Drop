@@ -81,10 +81,19 @@ export default function CollaborationPage() {
               Working together on "Smart Home Automation" project
             </p>
           </div>
-          <Button className="gap-2">
-            <Sparkles className="h-4 w-4" />
-            New Update
-          </Button>
+          <div className="space-x-4 flex">
+            <Button className="flex items-center gap-2" variant="outline">
+              <Users className="h-4 w-4" />
+              <span>Request</span>
+              <span className="bg-gray-50 text-black rounded-full px-1.5 text-sm">
+                0
+              </span>
+            </Button>
+            <Button className="gap-2">
+              <Sparkles className="h-4 w-4" />
+              New Update
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

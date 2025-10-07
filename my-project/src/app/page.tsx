@@ -1,6 +1,6 @@
 import React from "react";
 import IdeaDetailPage from "./idea/details/[id]/page";
-import CollaborationPage from "./collaboration/page";
+import CollaborationPage from "./collaboration/[id]/page";
 import ProfilePage from "./profile/page";
 import DiscoverPage from "./discover/page";
 import NotificationsPage from "./notification/page";

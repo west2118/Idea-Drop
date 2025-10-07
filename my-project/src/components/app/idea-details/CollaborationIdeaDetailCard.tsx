@@ -17,19 +17,25 @@ const CollaborationIdeaDetailCard = ({
         <div className="space-y-3">
           <div className="flex justify-between gap-2">
             <span className="text-sm text-slate-600">Status</span>
-            <Badge variant="outline" className="bg-green-50 text-green-700">
-              Open
+            <Badge
+              variant="outline"
+              className={`${
+                collaboration.status ? "text-green-700" : "text-red-700"
+              }`}>
+              {collaboration?.status ? "Open" : "Closed"}
             </Badge>
           </div>
           <div className="flex justify-between gap-2">
             <span className="text-sm text-slate-600">Looking For</span>
             <span className="text-sm text-end">
-              AI Engineers, Hardware Designers
+              {collaboration.lookingFor?.join(", ")}
             </span>
           </div>
           <div className="flex justify-between gap-2">
             <span className="text-sm text-slate-600">Team Members</span>
-            <span className="text-sm">3 joined</span>
+            <span className="text-sm">
+              {collaboration?.collaborations?.length ?? 0} joined
+            </span>
           </div>
         </div>
       </CardContent>

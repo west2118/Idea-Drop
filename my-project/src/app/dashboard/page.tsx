@@ -34,12 +34,18 @@ import DashboardIdeaCard from "@/components/app/dashboard/DashboardIdeaCard";
 import { useQuery } from "@tanstack/react-query";
 import { useUserStore } from "@/stores/useUserStore";
 import { fetchData } from "@/lib/utils";
-import { IdeaType } from "@/lib/types";
+import { CollaborationType, IdeaType } from "@/lib/types";
 import MyIdeaCardDashboard from "@/components/app/dashboard/MyIdeaCardDashboard";
 import CollaborationsCardDashboard from "@/components/app/dashboard/CollaborationsCardDashboard";
+import { WithSkeleton } from "@/components/app/WithSkeleton";
+import CollaborationsCardDashboardSkeleton from "@/components/app/skeletons/CollaborationsCardDashboardSkeleton.";
 
 type Idea = {
   ideas: IdeaType[];
+};
+
+type Collaboration = {
+  collaborations: CollaborationType[];
 };
 
 export default function Dashboard() {
@@ -47,21 +53,27 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("latest");
   const [viewMode, setViewMode] = useState("grid");
 
-  const { data, error, isLoading } = useQuery<Idea>({
+  const {
+    data: idea,
+    error: ideasError,
+    isLoading: isIdeasLoading,
+  } = useQuery<Idea>({
     queryKey: ["ideas"],
     queryFn: fetchData("/api/idea/getIdeas", token),
     enabled: !!token,
   });
 
-  // Categories for sidebar
-  const categories = [
-    { name: "Technology", count: 42, icon: "💻" },
-    { name: "Sustainability", count: 38, icon: "🌱" },
-    { name: "Education", count: 31, icon: "🎓" },
-    { name: "Design", count: 28, icon: "🎨" },
-    { name: "Social Impact", count: 25, icon: "🤝" },
-    { name: "Health", count: 19, icon: "❤️" },
-  ];
+  const {
+    data: collaboration,
+    error: collabError,
+    isLoading: isCollabLoading,
+  } = useQuery<Collaboration>({
+    queryKey: ["my-collaborations"],
+    queryFn: fetchData("/api/collaboration/getCollaboration", token),
+    enabled: !!token,
+  });
+
+  console.log(collaboration?.collaborations);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -109,7 +121,7 @@ export default function Dashboard() {
                       ? "grid grid-cols-1 md:grid-cols-2 gap-6"
                       : "space-y-6"
                   }>
-                  {data?.ideas.map((idea: any) => (
+                  {idea?.ideas.map((idea: any) => (
                     <DashboardIdeaCard key={idea.title} idea={idea} />
                   ))}
                 </div>
@@ -124,7 +136,16 @@ export default function Dashboard() {
           <MyIdeaCardDashboard />
 
           {/* Collaborations */}
-          <CollaborationsCardDashboard />
+
+          <WithSkeleton
+            isLoading={isCollabLoading}
+            skeleton={<CollaborationsCardDashboardSkeleton />}>
+            {collaboration?.collaborations && (
+              <CollaborationsCardDashboard
+                collaborations={collaboration?.collaborations ?? []}
+              />
+            )}
+          </WithSkeleton>
         </div>
       </div>
     </div>

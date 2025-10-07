@@ -33,11 +33,13 @@ const CollaborationSchema = new Schema({
         enum: ["pending", "accepted", "declined"],
         default: "pending",
       },
+      message: { type: String },
       requestedAt: { type: Date, default: Date.now },
     },
   ],
-  lookingFor: { type: String, required: true },
+  lookingFor: { type: [String], required: true },
   notes: { type: String, required: true },
+  status: { type: Boolean, default: true },
 });
 
 const Collaboration =

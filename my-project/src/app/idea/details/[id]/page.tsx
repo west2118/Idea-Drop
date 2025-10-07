@@ -16,6 +16,8 @@ import CollaborationIdeaDetailCard from "@/components/app/idea-details/Collabora
 import AuthorProfileIdeaDetailSkeleton from "@/components/app/skeletons/AuthorProfileIdeaDetailSkeleton";
 import RelatedIdeaDetailCardSkeleton from "@/components/app/skeletons/RelatedIdeaDetailCardSkeleton";
 import CollaborationIdeaDetailCardSkeleton from "@/components/app/skeletons/CollaborationIdeaDetailCardSkeleton";
+import CreateCollaborationModal from "@/components/app/modals/CreateCollaborationModal";
+import RequestCollaborationModal from "@/components/app/modals/RequestCollaborationModal";
 
 type IdeaDetails = {
   idea: IdeaType;
@@ -30,7 +32,9 @@ type IdeaDetails = {
 export default function IdeaDetailPage() {
   const { id } = useParams();
   const token = useUserStore((state) => state.userToken);
-  const [isShowComment, setIsShowComment] = useState<boolean>(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [isShowComment, setIsShowComment] = useState(false);
 
   const { data, error, isLoading } = useQuery<IdeaDetails>({
     queryKey: ["idea-details", id],
@@ -41,6 +45,16 @@ export default function IdeaDetailPage() {
   const handleToggleShowComment = () => {
     setIsShowComment((prev) => !prev);
   };
+
+  const handleOpenModalCreate = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleOpenModalRequest = () => {
+    setIsRequestModalOpen(true);
+  };
+
+  console.log("Collaboration Details: ", data?.collaboration);
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
@@ -58,6 +72,8 @@ export default function IdeaDetailPage() {
               reactions={data?.reactions ?? 0}
               toggleComment={handleToggleShowComment}
               collaboration={data?.collaboration ?? null}
+              handleOpenModalCreate={handleOpenModalCreate}
+              handleOpenModalRequest={handleOpenModalRequest}
             />
           </WithSkeleton>
 
@@ -98,6 +114,20 @@ export default function IdeaDetailPage() {
           </WithSkeleton>
         </div>
       </div>
+
+      <CreateCollaborationModal
+        isModalOpen={isCreateModalOpen}
+        isCloseModal={() => setIsCreateModalOpen(false)}
+        idea_id={data?.idea._id}
+        projectName={data?.idea.title}
+      />
+
+      <RequestCollaborationModal
+        isModalOpen={isRequestModalOpen}
+        isCloseModal={() => setIsRequestModalOpen(false)}
+        idea={data?.idea ?? null}
+        collaboration={data?.collaboration ?? null}
+      />
     </div>
   );
 }

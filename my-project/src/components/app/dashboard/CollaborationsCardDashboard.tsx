@@ -10,14 +10,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Users } from "lucide-react";
 import Link from "next/link";
+import { CollaborationType } from "@/lib/types";
 
-const collaborations = [
-  { name: "Urban Garden Project", members: 4, progress: 65 },
-  { name: "Accessibility Tool Dev", members: 3, progress: 42 },
-  { name: "Food Waste App", members: 5, progress: 78 },
-];
+type CollaborationsCardDashboardProps = {
+  collaborations: CollaborationType[];
+};
 
-const CollaborationsCardDashboard = () => {
+const CollaborationsCardDashboard = ({
+  collaborations,
+}: CollaborationsCardDashboardProps) => {
   return (
     <Card>
       <CardHeader>
@@ -28,24 +29,27 @@ const CollaborationsCardDashboard = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {collaborations.map((project, index) => (
+          {collaborations.map((collaboration, index) => (
             <div key={index} className="space-y-2">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-start">
                 <Link
-                  href="/collaboration"
+                  href={`/collaboration/${collaboration._id}`}
                   className="text-sm font-medium hover:text-gray-600">
-                  {project.name}
+                  {typeof collaboration?.idea_id !== "string" &&
+                    collaboration?.idea_id?.title}
                 </Link>
-                <Badge variant="outline">{project.members} members</Badge>
+                <Badge variant="outline">
+                  {collaboration?.collaborations?.length ?? 0} members
+                </Badge>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-2">
                 <div
                   className="bg-blue-600 h-2 rounded-full"
-                  style={{ width: `${project.progress}%` }}></div>
+                  style={{ width: `${66}%` }}></div>
               </div>
               <div className="flex justify-between text-xs text-slate-500">
                 <span>Progress</span>
-                <span>{project.progress}%</span>
+                <span>{66}%</span>
               </div>
             </div>
           ))}
