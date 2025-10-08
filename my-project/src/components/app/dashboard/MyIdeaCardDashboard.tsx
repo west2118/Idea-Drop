@@ -3,7 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
 import Link from "next/link";
 
-const MyIdeaCardDashboard = () => {
+type MyIdeaCardDashboardProps = {
+  ideaCount: number | undefined;
+  favoriteCount: number | undefined;
+};
+
+const MyIdeaCardDashboard = ({
+  ideaCount,
+  favoriteCount,
+}: MyIdeaCardDashboardProps) => {
   return (
     <Card>
       <CardHeader>
@@ -21,7 +29,7 @@ const MyIdeaCardDashboard = () => {
             <Badge
               variant="secondary"
               className="group-hover:text-gray-500 group-hover:bg-gray-100">
-              7
+              {ideaCount}
             </Badge>
           </Link>
 
@@ -32,7 +40,7 @@ const MyIdeaCardDashboard = () => {
             <Badge
               variant="secondary"
               className="group-hover:text-gray-500 group-hover:bg-gray-100">
-              2
+              {favoriteCount}
             </Badge>
           </Link>
         </div>

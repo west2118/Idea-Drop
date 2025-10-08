@@ -28,8 +28,28 @@ import {
   ClipboardList,
   MoreHorizontal,
 } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { CollaborationType } from "@/lib/types";
+import { fetchData } from "@/lib/utils";
+import { useUserStore } from "@/stores/useUserStore";
+import CollaborationHeader from "@/components/app/collaboration/CollaborationHeader";
+import CollaborationRequestsModal from "@/components/app/modals/CollaborationRequestsModal";
+
+type CollaborationResponse = {
+  collaboration: CollaborationType;
+};
 
 export default function CollaborationPage() {
+  const { id } = useParams();
+  const token = useUserStore((state) => state.userToken);
+
+  const { data, error, isLoading } = useQuery<CollaborationResponse>({
+    queryKey: ["collaboration", id],
+    queryFn: fetchData(`/api/collaboration/${id}`, token),
+    enabled: !!token && !!id,
+  });
+
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -68,33 +88,20 @@ export default function CollaborationPage() {
     }
   };
 
+  console.log(data?.collaboration);
+
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Project Collaboration
-            </h1>
-            <p className="text-gray-600">
-              Working together on "Smart Home Automation" project
-            </p>
-          </div>
-          <div className="space-x-4 flex">
-            <Button className="flex items-center gap-2" variant="outline">
-              <Users className="h-4 w-4" />
-              <span>Request</span>
-              <span className="bg-gray-50 text-black rounded-full px-1.5 text-sm">
-                0
-              </span>
-            </Button>
-            <Button className="gap-2">
-              <Sparkles className="h-4 w-4" />
-              New Update
-            </Button>
-          </div>
-        </div>
+        <CollaborationHeader
+          title={
+            (typeof data?.collaboration?.idea_id !== "string" &&
+              data?.collaboration?.idea_id?.title) ??
+            ""
+          }
+          requests={data?.collaboration.requests}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Collaborators */}
@@ -400,6 +407,8 @@ export default function CollaborationPage() {
           </Card>
         </div>
       </div>
+
+      <CollaborationRequestsModal />
     </div>
   );
 }

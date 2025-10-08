@@ -39,6 +39,7 @@ import MyIdeaCardDashboard from "@/components/app/dashboard/MyIdeaCardDashboard"
 import CollaborationsCardDashboard from "@/components/app/dashboard/CollaborationsCardDashboard";
 import { WithSkeleton } from "@/components/app/WithSkeleton";
 import CollaborationsCardDashboardSkeleton from "@/components/app/skeletons/CollaborationsCardDashboardSkeleton.";
+import MyIdeaCardDashboardSkeleton from "@/components/app/modals/MyIdeaCardDashboardSkeleton";
 
 type Idea = {
   ideas: IdeaType[];
@@ -46,6 +47,11 @@ type Idea = {
 
 type Collaboration = {
   collaborations: CollaborationType[];
+};
+
+type CountResponse = {
+  ideas: number;
+  favorites: number;
 };
 
 export default function Dashboard() {
@@ -69,11 +75,19 @@ export default function Dashboard() {
     isLoading: isCollabLoading,
   } = useQuery<Collaboration>({
     queryKey: ["my-collaborations"],
-    queryFn: fetchData("/api/collaboration/getCollaboration", token),
+    queryFn: fetchData("/api/collaboration/getMyCollaborations", token),
     enabled: !!token,
   });
 
-  console.log(collaboration?.collaborations);
+  const {
+    data: count,
+    error: countError,
+    isLoading: isCountLoading,
+  } = useQuery<CountResponse>({
+    queryKey: ["my-idea-favorite-count"],
+    queryFn: fetchData("/api/idea/getIdeaFavoriteCount", token),
+    enabled: !!token,
+  });
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -133,10 +147,18 @@ export default function Dashboard() {
         {/* Sidebar */}
         <div className="lg:col-span-1 space-y-6">
           {/* My Ideas */}
-          <MyIdeaCardDashboard />
+          <WithSkeleton
+            isLoading={isCountLoading}
+            skeleton={<MyIdeaCardDashboardSkeleton />}>
+            {count && (
+              <MyIdeaCardDashboard
+                ideaCount={count?.ideas ?? 0}
+                favoriteCount={count?.favorites ?? 0}
+              />
+            )}
+          </WithSkeleton>
 
           {/* Collaborations */}
-
           <WithSkeleton
             isLoading={isCollabLoading}
             skeleton={<CollaborationsCardDashboardSkeleton />}>

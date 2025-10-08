@@ -33,7 +33,7 @@ export type CollaborationType = {
     role: "owner" | "collaborator";
     joinedAt: string;
   }[];
-  request?: {
+  requests?: {
     user: string;
     status: "pending" | "accepted" | "declined";
     requestedAt: string;
