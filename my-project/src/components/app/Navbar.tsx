@@ -97,7 +97,9 @@ const Navbar = () => {
                   {userName && (
                     <>
                       <DropdownMenuLabel className="font-normal">
-                        <div className="flex flex-col space-y-1">
+                        <Link
+                          href={`/profile/${user._id}`}
+                          className="flex flex-col space-y-1">
                           <p className="text-sm font-medium leading-none">
                             {userName}
                           </p>
@@ -106,7 +108,7 @@ const Navbar = () => {
                               {userEmail}
                             </p>
                           )}
-                        </div>
+                        </Link>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                     </>

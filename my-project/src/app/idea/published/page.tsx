@@ -20,8 +20,8 @@ const MyIdeaPublishedPage = () => {
   const [viewMode, setViewMode] = useState("grid");
 
   const { data, error, isLoading } = useQuery<Idea>({
-    queryKey: ["ideas"],
-    queryFn: fetchData("/api/idea/getIdeas", token),
+    queryKey: ["my-ideas"],
+    queryFn: fetchData("/api/idea/getMyIdeas", token),
     enabled: !!token,
   });
 

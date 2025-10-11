@@ -11,7 +11,7 @@ import { Clock, Grid, List, TrendingUp } from "lucide-react";
 import { useState } from "react";
 
 type Idea = {
-  ideas: IdeaType[];
+  favoriteIdeas: IdeaType[];
 };
 
 const MyIdeaFavoritesPage = () => {
@@ -20,10 +20,12 @@ const MyIdeaFavoritesPage = () => {
   const [viewMode, setViewMode] = useState("grid");
 
   const { data, error, isLoading } = useQuery<Idea>({
-    queryKey: ["ideas"],
-    queryFn: fetchData("/api/idea/getIdeas", token),
+    queryKey: ["my-idea-favorites"],
+    queryFn: fetchData("/api/idea/getMyFavorites", token),
     enabled: !!token,
   });
+
+  console.log(data?.favoriteIdeas);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -58,7 +60,7 @@ const MyIdeaFavoritesPage = () => {
                     ? "grid grid-cols-1 md:grid-cols-3 gap-6"
                     : "space-y-6"
                 }>
-                {data?.ideas.map((idea: any) => (
+                {data?.favoriteIdeas.map((idea: any) => (
                   <DashboardIdeaCard key={idea.title} idea={idea} />
                 ))}
               </div>

@@ -64,7 +64,7 @@ export default function Dashboard() {
     error: ideasError,
     isLoading: isIdeasLoading,
   } = useQuery<Idea>({
-    queryKey: ["ideas"],
+    queryKey: ["ideas-feed"],
     queryFn: fetchData("/api/idea/getIdeas", token),
     enabled: !!token,
   });
@@ -88,6 +88,8 @@ export default function Dashboard() {
     queryFn: fetchData("/api/idea/getIdeaFavoriteCount", token),
     enabled: !!token,
   });
+
+  console.log(collaboration?.collaborations);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -162,11 +164,12 @@ export default function Dashboard() {
           <WithSkeleton
             isLoading={isCollabLoading}
             skeleton={<CollaborationsCardDashboardSkeleton />}>
-            {collaboration?.collaborations && (
-              <CollaborationsCardDashboard
-                collaborations={collaboration?.collaborations ?? []}
-              />
-            )}
+            {collaboration?.collaborations &&
+              collaboration?.collaborations.length > 0 && (
+                <CollaborationsCardDashboard
+                  collaborations={collaboration?.collaborations ?? []}
+                />
+              )}
           </WithSkeleton>
         </div>
       </div>
