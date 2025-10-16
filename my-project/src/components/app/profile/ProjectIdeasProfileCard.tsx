@@ -1,5 +1,4 @@
 import React from "react";
-import { userData } from "./CollaborationProfileCard";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,27 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  User,
-  Mail,
-  MapPin,
-  Calendar,
-  Award,
-  Trophy,
-  Star,
-  Zap,
-  Lightbulb,
-  Users,
-  ChevronRight,
-  Edit,
-  Shield,
-  Heart,
-  Bookmark,
-  LogOut,
-} from "lucide-react";
+import { Users, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { IdeaType } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
-const ProjectIdeasProfileCard = () => {
+const ProjectIdeasProfileCard = ({ ideas }: { ideas: IdeaType[] | null }) => {
+  const router = useRouter();
+
   return (
     <Card>
       <CardHeader>
@@ -42,27 +28,27 @@ const ProjectIdeasProfileCard = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {userData.collaborations.map((project) => (
+          {ideas?.map((idea) => (
             <Card
-              key={project.id}
-              className={`overflow-hidden ${
-                project.status === "Active"
-                  ? "border-blue-200"
-                  : "border-green-200"
-              }`}>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">{project.title}</CardTitle>
-                <CardDescription>{project.role}</CardDescription>
+              key={idea._id}
+              className="overflow-hidden flex flex-col justify-between">
+              <CardHeader className="pb-2 flex-grow">
+                <div className="min-h-[80px] flex flex-col justify-start">
+                  <CardTitle className="text-lg mb-1">{idea.title}</CardTitle>
+                  <CardDescription className="line-clamp-2">
+                    {idea.content?.description?.split(".")[0]}
+                  </CardDescription>
+                </div>
               </CardHeader>
+
               <CardContent>
                 <div className="flex justify-between items-center">
-                  <Badge
-                    variant={
-                      project.status === "Active" ? "default" : "outline"
-                    }>
-                    {project.status}
-                  </Badge>
-                  <Button variant="ghost" size="sm" className="gap-1">
+                  <Badge>{idea.categories?.[0]}</Badge>
+                  <Button
+                    onClick={() => router.push(`/idea/details/${idea._id}`)}
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1">
                     View <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>

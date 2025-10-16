@@ -45,3 +45,16 @@ export type CollaborationType = {
   updatedAt: string;
   __v: number;
 };
+
+export type UserType = {
+  _id: string;
+  uid: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  createdAt: string; // ISO string format
+  updatedAt: string; // ISO string format
+  skills?: string[];
+  interests?: string[];
+  __v: number;
+};

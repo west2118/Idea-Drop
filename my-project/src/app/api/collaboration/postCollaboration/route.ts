@@ -32,12 +32,29 @@ export async function POST(req: Request) {
       );
     }
 
-    const newCollaboration = await Collaboration.create({
+    const existingCollaboration = await Collaboration.findOne({
+      idea_id,
+      owner: user._id,
+    });
+    if (existingCollaboration) {
+      return NextResponse.json(
+        { message: "Collaboration already exist for this idea" },
+        { status: 400 }
+      );
+    }
+
+    const collaboration = await Collaboration.create({
       idea_id,
       owner: user._id,
       lookingFor,
       notes,
     });
+
+    const newCollaboration = await Collaboration.findByIdAndUpdate(
+      collaboration._id,
+      { $push: { collaborations: { user: user._id, role: "owner" } } },
+      { new: true }
+    );
 
     return NextResponse.json(
       { message: "Collaboration created successfully!", newCollaboration },

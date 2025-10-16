@@ -4,7 +4,7 @@ import User from "@/models/user.model";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { token, firstName, lastName } = await req.json();
+  const { token, firstName, lastName, skills, interests } = await req.json();
 
   try {
     const decoded = await adminAuth.verifyIdToken(token);
@@ -19,6 +19,8 @@ export async function POST(req: Request) {
         email: decoded.email,
         firstName,
         lastName,
+        skills,
+        interests,
       },
       {
         upsert: true,

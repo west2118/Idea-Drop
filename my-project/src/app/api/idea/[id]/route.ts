@@ -20,7 +20,6 @@ export async function GET(
   const { decoded } = result;
 
   const { searchParams } = new URL(req.url);
-  const type = searchParams.get("type");
 
   try {
     await dbConnect();
@@ -30,20 +29,6 @@ export async function GET(
       return NextResponse.json(
         { message: "User didn't exist" },
         { status: 400 }
-      );
-    }
-
-    if (type === "ideas-user") {
-      const ideas = await Idea.find({ user_id: id }).populate(
-        "user_id",
-        "firstName lastName bio position"
-      );
-
-      return NextResponse.json(
-        {
-          ideas,
-        },
-        { status: 201 }
       );
     }
 

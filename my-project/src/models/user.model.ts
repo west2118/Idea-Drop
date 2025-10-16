@@ -7,6 +7,8 @@ const UserSchema = new Schema(
     role: { type: String, default: "User" },
     firstName: { type: String },
     lastName: { type: String },
+    skills: { type: [String] },
+    interests: { type: [String] },
     bio: { type: String },
     position: { type: String },
   },

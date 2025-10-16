@@ -29,31 +29,137 @@ import {
   Bookmark,
   LogOut,
 } from "lucide-react";
-import CollaborationProfileCard, {
-  userData,
-} from "@/components/app/profile/CollaborationProfileCard";
+import CollaborationProfileCard from "@/components/app/profile/CollaborationProfileCard";
 import ProjectIdeasProfileCard from "@/components/app/profile/ProjectIdeasProfileCard";
 import { useParams } from "next/navigation";
 import { fetchData } from "@/lib/utils";
 import { useUserStore } from "@/stores/useUserStore";
 import { useQuery } from "@tanstack/react-query";
-import { IdeaType } from "@/lib/types";
+import { CollaborationType, IdeaType } from "@/lib/types";
 
-type DataProps = {
+type IdeaResponse = {
   ideas: IdeaType[];
+};
+
+type CollaborationResponse = {
+  collaborations: CollaborationType[];
+};
+
+export const userData = {
+  name: "Alex Johnson",
+  username: "@alexj",
+  bio: "Frontend developer passionate about creating beautiful and accessible user interfaces. Currently specializing in React and Next.js.",
+  email: "alex.johnson@example.com",
+  location: "San Francisco, CA",
+  joinDate: "Joined January 2023",
+  skills: [
+    "React",
+    "Next.js",
+    "TypeScript",
+    "UI/UX Design",
+    "Figma",
+    "Node.js",
+  ],
+  interests: [
+    "Web Accessibility",
+    "Design Systems",
+    "Open Source",
+    "Mountain Biking",
+  ],
+  points: 1240,
+  level: 8,
+  nextLevelPoints: 1600,
+  badges: [
+    {
+      name: "Early Adopter",
+      icon: Shield,
+      color: "text-blue-600",
+      earned: "Jan 2023",
+    },
+    {
+      name: "Idea Generator",
+      icon: Lightbulb,
+      color: "text-yellow-600",
+      earned: "Mar 2023",
+    },
+    {
+      name: "Team Player",
+      icon: Users,
+      color: "text-green-600",
+      earned: "Jun 2023",
+    },
+    {
+      name: "Community Favorite",
+      icon: Heart,
+      color: "text-red-600",
+      earned: "Aug 2023",
+    },
+  ],
+  postedIdeas: [
+    {
+      id: 1,
+      title: "AI-Powered Code Review Tool",
+      collaborators: 4,
+      status: "In Progress",
+    },
+    {
+      id: 2,
+      title: "Sustainable E-commerce Platform",
+      collaborators: 2,
+      status: "Planning",
+    },
+    {
+      id: 3,
+      title: "AR Interior Design App",
+      collaborators: 3,
+      status: "Completed",
+    },
+  ],
+  collaborations: [
+    {
+      id: 1,
+      title: "Smart Home Automation",
+      role: "Frontend Lead",
+      status: "Active",
+    },
+    {
+      id: 2,
+      title: "Health & Fitness Tracker",
+      role: "UI Designer",
+      status: "Completed",
+    },
+    {
+      id: 3,
+      title: "Community Garden Platform",
+      role: "Full-stack Developer",
+      status: "Active",
+    },
+  ],
 };
 
 export default function ProfilePage() {
   const { id } = useParams();
   const token = useUserStore((state) => state.userToken);
 
-  const { data, error, isLoading } = useQuery<DataProps>({
+  const {
+    data: dataIdea,
+    error: errorIdea,
+    isLoading: loadingIdea,
+  } = useQuery<IdeaResponse>({
     queryKey: ["user-ideas", id],
-    queryFn: fetchData(`/api/idea/${id}?type=ideas-user`, token),
+    queryFn: fetchData(`/api/idea/getUserIdeas/${id}`, token),
     enabled: !!token && !!id,
   });
 
-  console.log(data);
+  const {
+    data: dataCollaboration,
+    error: errorCollaboration,
+    isLoading: loadingCollaboration,
+  } = useQuery<CollaborationResponse>({
+    queryKey: ["user-collaborations", id],
+    queryFn: fetchData(`/api/collaboration/getUserCollaborations/${id}`, token),
+    enabled: !!token && !!id,
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-gray-100 p-6">
@@ -102,24 +208,6 @@ export default function ProfilePage() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2">
-                  <Zap className="h-5 w-5" />
-                  Skills
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {userData.skills.map((skill, index) => (
-                    <Badge key={index} variant="secondary" className="text-sm">
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2">
                   <Heart className="h-5 w-5" />
                   Interests
                 </CardTitle>
@@ -138,9 +226,11 @@ export default function ProfilePage() {
 
           {/* Middle Column - Stats and Achievements */}
           <div className="lg:col-span-2 space-y-6">
-            <ProjectIdeasProfileCard />
+            <ProjectIdeasProfileCard ideas={dataIdea?.ideas ?? null} />
 
-            <CollaborationProfileCard />
+            <CollaborationProfileCard
+              collaborations={dataCollaboration?.collaborations ?? null}
+            />
           </div>
         </div>
       </div>
