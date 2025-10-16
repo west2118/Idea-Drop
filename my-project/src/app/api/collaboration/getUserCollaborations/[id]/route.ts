@@ -32,8 +32,6 @@ export async function GET(
       "collaborations.user": id,
     }).populate("idea_id", "title");
 
-    console.log(collaborations);
-
     return NextResponse.json(
       {
         collaborations,

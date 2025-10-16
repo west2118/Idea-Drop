@@ -8,22 +8,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Zap } from "lucide-react";
+import { Heart } from "lucide-react";
 
-const SkillsProfileCard = ({ skills }: { skills: string[] | null }) => {
+const InterestsProfileCard = ({
+  interests,
+}: {
+  interests: string[] | null;
+}) => {
   return (
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
-          <Zap className="h-5 w-5" />
-          Skills
+          <Heart className="h-5 w-5" />
+          Interests
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2">
-          {skills?.map((skill) => (
-            <Badge key={skill} variant="secondary" className="text-sm">
-              {skill}
+          {interests?.map((interest) => (
+            <Badge key={interest} variant="outline" className="text-sm">
+              {interest}
             </Badge>
           ))}
         </div>
@@ -32,4 +36,4 @@ const SkillsProfileCard = ({ skills }: { skills: string[] | null }) => {
   );
 };
 
-export default SkillsProfileCard;
+export default InterestsProfileCard;

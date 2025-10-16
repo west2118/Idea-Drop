@@ -19,7 +19,17 @@ export async function GET(
   try {
     await dbConnect();
 
-    const user = await User.findOne({ uid: decoded.uid });
+    console.log("USER ID:", id);
+
+    const currentUser = await User.findOne({ uid: decoded.uid });
+    if (!currentUser) {
+      return NextResponse.json(
+        { message: "User didn't exist" },
+        { status: 400 }
+      );
+    }
+
+    const user = await User.findById(id);
     if (!user) {
       return NextResponse.json(
         { message: "User didn't exist" },
@@ -27,15 +37,9 @@ export async function GET(
       );
     }
 
-    const ideas = await Idea.find({ user_id: id });
-
-    return NextResponse.json(
-      {
-        ideas,
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

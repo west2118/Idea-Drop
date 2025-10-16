@@ -52,6 +52,7 @@ export type UserType = {
   email: string;
   firstName: string;
   lastName: string;
+  bio?: string;
   createdAt: string; // ISO string format
   updatedAt: string; // ISO string format
   skills?: string[];

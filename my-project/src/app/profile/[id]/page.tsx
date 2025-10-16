@@ -35,7 +35,17 @@ import { useParams } from "next/navigation";
 import { fetchData } from "@/lib/utils";
 import { useUserStore } from "@/stores/useUserStore";
 import { useQuery } from "@tanstack/react-query";
-import { CollaborationType, IdeaType } from "@/lib/types";
+import { CollaborationType, IdeaType, UserType } from "@/lib/types";
+import SkillsProfileCard from "@/components/app/profile/SkillsProfileCard";
+import InterestsProfileCard from "@/components/app/profile/InterestsProfileCard";
+import InfoProfileCard from "@/components/app/profile/InfoProfileCard";
+import { WithSkeleton } from "@/components/app/WithSkeleton";
+import ProfileInfoSkeletonLoading from "@/components/app/skeletons/profile/IdeasCardSkeleton";
+import IdeasCardSkeleton from "@/components/app/skeletons/profile/IdeasCardSkeleton";
+import CollaborationCardSkeleton from "@/components/app/skeletons/profile/CollaborationCardSkeleton";
+import InterestsProfileCardSkeleton from "@/components/app/skeletons/profile/InterestsProfileCardSkeleton";
+import InfoProfileCardSkeleton from "@/components/app/skeletons/profile/InfoProfileCardSkeleton";
+import SkillsProfileCardSkeleton from "@/components/app/skeletons/profile/SkillsProfileCardSkeleton";
 
 type IdeaResponse = {
   ideas: IdeaType[];
@@ -43,6 +53,10 @@ type IdeaResponse = {
 
 type CollaborationResponse = {
   collaborations: CollaborationType[];
+};
+
+type UserResponse = {
+  user: UserType;
 };
 
 export const userData = {
@@ -142,6 +156,16 @@ export default function ProfilePage() {
   const token = useUserStore((state) => state.userToken);
 
   const {
+    data: dataUser,
+    error: errorUser,
+    isLoading: loadingUser,
+  } = useQuery<UserResponse>({
+    queryKey: ["user-details", id],
+    queryFn: fetchData(`/api/user/getUserInfo/${id}`, token),
+    enabled: !!token && !!id,
+  });
+
+  const {
     data: dataIdea,
     error: errorIdea,
     isLoading: loadingIdea,
@@ -161,76 +185,50 @@ export default function ProfilePage() {
     enabled: !!token && !!id,
   });
 
+  console.log(dataUser?.user);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-gray-100 p-6">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - User Info */}
           <div className="lg:col-span-1 space-y-6">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <Avatar className="h-24 w-24 mb-4">
-                    <AvatarImage src="/avatars/alex.jpg" />
-                    <AvatarFallback className="text-2xl">AJ</AvatarFallback>
-                  </Avatar>
-                  <h2 className="text-xl font-bold">{userData.name}</h2>
-                  <p className="text-gray-600">{userData.username}</p>
-                  <p className="text-sm text-gray-500 mt-2">{userData.bio}</p>
+            <WithSkeleton
+              isLoading={loadingUser}
+              skeleton={<InfoProfileCardSkeleton />}>
+              <InfoProfileCard user={dataUser?.user ?? null} />
+            </WithSkeleton>
 
-                  <div className="flex flex-col items-start w-full space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Mail className="h-4 w-4 text-gray-500" />
-                      <span>{userData.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-gray-500" />
-                      <span>{userData.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="h-4 w-4 text-gray-500" />
-                      <span>{userData.joinDate}</span>
-                    </div>
-                  </div>
+            <WithSkeleton
+              isLoading={loadingUser}
+              skeleton={<SkillsProfileCardSkeleton />}>
+              <SkillsProfileCard skills={dataUser?.user.skills ?? null} />
+            </WithSkeleton>
 
-                  <div className="w-full flex-col space-y-2">
-                    <Button className="w-full">
-                      <Edit className="h-4 w-4" /> Edit Profile
-                    </Button>
-                    <Button className="w-full" variant="destructive">
-                      <LogOut className="h-4 w-4" /> Log Out
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2">
-                  <Heart className="h-5 w-5" />
-                  Interests
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {userData.interests.map((interest, index) => (
-                    <Badge key={index} variant="outline" className="text-sm">
-                      {interest}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <WithSkeleton
+              isLoading={loadingUser}
+              skeleton={<InterestsProfileCardSkeleton />}>
+              <InterestsProfileCard
+                interests={dataUser?.user.interests ?? null}
+              />
+            </WithSkeleton>
           </div>
 
           {/* Middle Column - Stats and Achievements */}
           <div className="lg:col-span-2 space-y-6">
-            <ProjectIdeasProfileCard ideas={dataIdea?.ideas ?? null} />
+            <WithSkeleton
+              isLoading={loadingUser}
+              skeleton={<IdeasCardSkeleton />}>
+              <ProjectIdeasProfileCard ideas={dataIdea?.ideas ?? null} />
+            </WithSkeleton>
 
-            <CollaborationProfileCard
-              collaborations={dataCollaboration?.collaborations ?? null}
-            />
+            <WithSkeleton
+              isLoading={loadingUser}
+              skeleton={<CollaborationCardSkeleton />}>
+              <CollaborationProfileCard
+                collaborations={dataCollaboration?.collaborations ?? null}
+              />
+            </WithSkeleton>
           </div>
         </div>
       </div>
