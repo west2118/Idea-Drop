@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useUserStore } from "@/stores/useUserStore";
 import { useQuery } from "@tanstack/react-query";
-import { CollaborationType, IdeaType } from "@/lib/types";
+import { CollaborationType, CommentType, IdeaType } from "@/lib/types";
 import { fetchData, formatTimeAgo } from "@/lib/utils";
 import HeaderIdeaDetails from "@/components/app/idea-details/HeaderIdeaDetailsCard";
 import HeaderIdeaDetailsSkeleton from "@/components/app/skeletons/HeaderIdeaDetailsSkeleton";
@@ -29,6 +29,10 @@ type IdeaDetails = {
   collaboration: CollaborationType;
 };
 
+type CommentResponse = {
+  rootComments: CommentType[];
+};
+
 export default function IdeaDetailPage() {
   const { id } = useParams();
   const token = useUserStore((state) => state.userToken);
@@ -41,6 +45,18 @@ export default function IdeaDetailPage() {
     queryFn: fetchData(`/api/idea/${id}`, token),
     enabled: !!token && !!id,
   });
+
+  const {
+    data: commentData,
+    error: commentError,
+    isLoading: commentLoading,
+  } = useQuery<CommentResponse>({
+    queryKey: ["comments", id],
+    queryFn: fetchData(`/api/comment/getComments/${id}`, token),
+    enabled: !!token && !!id,
+  });
+
+  console.log("Comments: ", commentData?.rootComments);
 
   const handleToggleShowComment = () => {
     setIsShowComment((prev) => !prev);
@@ -78,7 +94,12 @@ export default function IdeaDetailPage() {
           </WithSkeleton>
 
           {/* Comments Section */}
-          {isShowComment && <CommentIdeaDetailsCard />}
+          {isShowComment && (
+            <CommentIdeaDetailsCard
+              ideaId={data?.idea._id ?? null}
+              commentsList={commentData?.rootComments ?? null}
+            />
+          )}
         </div>
 
         {/* Sidebar */}

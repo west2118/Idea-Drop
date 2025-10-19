@@ -59,3 +59,12 @@ export type UserType = {
   interests?: string[];
   __v: number;
 };
+
+export type CommentType = {
+  _id: string;
+  ideaId: string;
+  parentId?: string | null;
+  content: string;
+  replies?: CommentType[];
+  [key: string]: any;
+};

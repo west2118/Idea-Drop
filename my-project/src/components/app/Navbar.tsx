@@ -8,6 +8,9 @@ import {
   User,
   Settings,
   LogOut,
+  Bell,
+  LinkIcon,
+  Heart,
 } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
@@ -73,13 +76,38 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
-              <Button onClick={() => router.push("/idea/post")}>
-                <Plus className="h-4 w-4 mr-2" />
-                New Idea
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full p-0">
+                    <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                      <Plus className="h-4 w-4 text-black" />
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-42">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Plus className="h-4 w-4" />
+                    New Idea
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Heart className="h-4 w-4" />
+                    Favorites
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full p-0">
+                <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                  <Bell className="h-4 w-4 text-black" />
+                </div>
               </Button>
 
               <DropdownMenu>
@@ -88,7 +116,7 @@ const Navbar = () => {
                     variant="ghost"
                     className="relative h-8 w-8 rounded-full p-0">
                     <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-                      <User className="h-4 w-4 text-muted-foreground" />
+                      <User className="h-4 w-4 text-black" />
                     </div>
                   </Button>
                 </DropdownMenuTrigger>

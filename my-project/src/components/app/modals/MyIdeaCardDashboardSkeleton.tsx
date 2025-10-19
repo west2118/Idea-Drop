@@ -1,14 +1,15 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { User } from "lucide-react";
 
 const MyIdeaCardDashboardSkeleton = () => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center">
-          <Skeleton className="h-5 w-5 mr-2 rounded-full" />
-          <Skeleton className="h-5 w-20" />
-        </div>
+        <CardTitle className="text-lg flex items-center">
+          <User className="h-5 w-5 mr-2 text-blue-600" />
+          My Ideas
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

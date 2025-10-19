@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, Clock, Grid, List } from "lucide-react";
+import { TrendingUp, Clock, Grid, List, User, Plus } from "lucide-react";
 import DashboardIdeaCard from "@/components/app/dashboard/DashboardIdeaCard";
 import { IdeaType } from "@/lib/types";
 import { WithSkeleton } from "../WithSkeleton";
 import { DashboardIdeaCardSkeleton } from "../skeletons/dashboard/DashboardIdeaCardSkeleton";
+import Link from "next/link";
+import IdeaFeedNoData from "../no-data/IdeaFeedNoData";
 
 const IdeasFeedDashboard = ({
   ideas,
@@ -22,25 +24,27 @@ const IdeasFeedDashboard = ({
       <div className="bg-white rounded-lg border border-slate-200 p-6 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Ideas Feed</h2>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant={viewMode === "grid" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("grid")}>
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setViewMode("list")}>
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
+          {!isIdeasLoading && ideas.length > 0 && (
+            <div className="flex items-center space-x-2">
+              <Button
+                variant={viewMode === "grid" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("grid")}>
+                <Grid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("list")}>
+                <List className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {!isIdeasLoading && ideas.length > 0 && (
-            <TabsList className="grid grid-cols-2 w-full max-w-xs mb-6">
+            <TabsList className="grid grid-cols-2 w-full max-w-xs mb-2">
               <TabsTrigger value="latest" className="flex items-center">
                 <Clock className="h-4 w-4 mr-2" />
                 Latest
@@ -52,7 +56,7 @@ const IdeasFeedDashboard = ({
             </TabsList>
           )}
 
-          <TabsContent value={activeTab} className="mt-0">
+          <TabsContent value={activeTab} className="mt-2">
             <div
               className={
                 viewMode === "grid"
@@ -62,9 +66,13 @@ const IdeasFeedDashboard = ({
               <WithSkeleton
                 isLoading={isIdeasLoading}
                 skeleton={<DashboardIdeaCardSkeleton />}>
-                {ideas?.map((idea: any) => (
-                  <DashboardIdeaCard key={idea.title} idea={idea} />
-                ))}
+                {ideas && ideas.length > 0 ? (
+                  ideas?.map((idea: any) => (
+                    <DashboardIdeaCard key={idea.title} idea={idea} />
+                  ))
+                ) : (
+                  <IdeaFeedNoData />
+                )}
               </WithSkeleton>
             </div>
           </TabsContent>

@@ -29,37 +29,45 @@ const CollaborationsCardDashboard = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {collaborations.map((collaboration, index) => (
-            <div key={index} className="space-y-2">
-              <div className="flex justify-between items-start">
-                <Link
-                  href={`/collaboration/${collaboration._id}`}
-                  className="text-sm font-medium hover:text-gray-600">
-                  {typeof collaboration?.idea_id !== "string" &&
-                    collaboration?.idea_id?.title}
-                </Link>
-                <Badge variant="outline">
-                  {collaboration?.collaborations?.length ?? 0} members
-                </Badge>
+          {collaborations?.length > 0 ? (
+            collaborations.map((collaboration, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex justify-between items-start">
+                  <Link
+                    href={`/collaboration/${collaboration._id}`}
+                    className="text-sm font-medium hover:text-gray-600">
+                    {typeof collaboration?.idea_id !== "string" &&
+                      collaboration?.idea_id?.title}
+                  </Link>
+                  <Badge variant="outline">
+                    {collaboration?.collaborations?.length ?? 0} members
+                  </Badge>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full"
+                    style={{ width: `${66}%` }}></div>
+                </div>
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>Progress</span>
+                  <span>{66}%</span>
+                </div>
               </div>
-              <div className="w-full bg-slate-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full"
-                  style={{ width: `${66}%` }}></div>
-              </div>
-              <div className="flex justify-between text-xs text-slate-500">
-                <span>Progress</span>
-                <span>{66}%</span>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-sm text-slate-500 text-center py-6">
+              No collaborations yet.
+            </p>
+          )}
         </div>
       </CardContent>
-      <CardFooter>
-        <Button variant="outline" size="sm" className="w-full">
-          View All Projects
-        </Button>
-      </CardFooter>
+      {collaborations.length >= 3 && (
+        <CardFooter>
+          <Button variant="outline" size="sm" className="w-full">
+            View All Projects
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };

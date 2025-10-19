@@ -8,9 +8,9 @@ import { CollaborationType, IdeaType } from "@/lib/types";
 import MyIdeaCardDashboard from "@/components/app/dashboard/MyIdeaCardDashboard";
 import CollaborationsCardDashboard from "@/components/app/dashboard/CollaborationsCardDashboard";
 import { WithSkeleton } from "@/components/app/WithSkeleton";
-import CollaborationsCardDashboardSkeleton from "@/components/app/skeletons/CollaborationsCardDashboardSkeleton.";
 import MyIdeaCardDashboardSkeleton from "@/components/app/modals/MyIdeaCardDashboardSkeleton";
 import IdeasFeedDashboard from "@/components/app/dashboard/IdeasFeedDashboard";
+import { CollaborationsCardDashboardSkeleton } from "@/components/app/skeletons/CollaborationsCardDashboardSkeleton.";
 
 type Idea = {
   ideas: IdeaType[];
@@ -87,12 +87,11 @@ export default function Dashboard() {
           <WithSkeleton
             isLoading={isCollabLoading}
             skeleton={<CollaborationsCardDashboardSkeleton />}>
-            {collaboration?.collaborations &&
-              collaboration?.collaborations.length > 0 && (
-                <CollaborationsCardDashboard
-                  collaborations={collaboration?.collaborations ?? []}
-                />
-              )}
+            {collaboration?.collaborations && (
+              <CollaborationsCardDashboard
+                collaborations={collaboration?.collaborations ?? []}
+              />
+            )}
           </WithSkeleton>
         </div>
       </div>
