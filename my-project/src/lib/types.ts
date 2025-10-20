@@ -64,7 +64,7 @@ export type CommentType = {
   _id: string;
   ideaId: string;
   parentId?: string | null;
-  content: string;
+  text: string;
   replies?: CommentType[];
   [key: string]: any;
 };

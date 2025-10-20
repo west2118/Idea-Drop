@@ -18,6 +18,7 @@ import RelatedIdeaDetailCardSkeleton from "@/components/app/skeletons/RelatedIde
 import CollaborationIdeaDetailCardSkeleton from "@/components/app/skeletons/CollaborationIdeaDetailCardSkeleton";
 import CreateCollaborationModal from "@/components/app/modals/CreateCollaborationModal";
 import RequestCollaborationModal from "@/components/app/modals/RequestCollaborationModal";
+import { countCommentsAndReplies } from "@/lib/constants";
 
 type IdeaDetails = {
   idea: IdeaType;
@@ -70,8 +71,6 @@ export default function IdeaDetailPage() {
     setIsRequestModalOpen(true);
   };
 
-  console.log("Collaboration Details: ", data?.collaboration);
-
   return (
     <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -90,6 +89,9 @@ export default function IdeaDetailPage() {
               collaboration={data?.collaboration ?? null}
               handleOpenModalCreate={handleOpenModalCreate}
               handleOpenModalRequest={handleOpenModalRequest}
+              commentsCount={
+                countCommentsAndReplies(commentData?.rootComments!) ?? 0
+              }
             />
           </WithSkeleton>
 
@@ -98,6 +100,9 @@ export default function IdeaDetailPage() {
             <CommentIdeaDetailsCard
               ideaId={data?.idea._id ?? null}
               commentsList={commentData?.rootComments ?? null}
+              commentsCount={
+                countCommentsAndReplies(commentData?.rootComments!) ?? 0
+              }
             />
           )}
         </div>

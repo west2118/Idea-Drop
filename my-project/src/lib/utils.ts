@@ -39,24 +39,22 @@ export const handleAdd = (
 };
 
 export const fetchData =
-  (url: string, token: string | null, withParams = false) =>
-  async ({ queryKey }: { queryKey: any }) => {
-    const [_key, params] = queryKey;
-    const finalUrl = withParams ? `${url}/${params}` : url;
+  <T>(url: string, token: string | null, withParams = false) =>
+  async ({ queryKey }: { queryKey: any }): Promise<T> => {
+    const [_key, params] = queryKey ?? [];
+    const finalUrl = withParams ? `${url.replace(/\/$/, "")}/${params}` : url;
 
     try {
-      // Make the GET request with the Authorization header
-      const res = await axios.get(finalUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const headers: Record<string, string> = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
 
+      const res = await axios.get(finalUrl, { headers });
       return res.data;
     } catch (error: any) {
-      // Error handling
-      console.error("Error fetching data:", error);
-      throw new Error(error.response?.data?.message || "Error fetching data");
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || error.message);
+      }
+      throw new Error("Unexpected error occurred");
     }
   };
 

@@ -30,7 +30,9 @@ export async function GET(
 
     const comments = (await Comment.find({
       ideaId: id,
-    }).lean()) as unknown as CommentType[];
+    })
+      .populate("user", "firstName lastName")
+      .lean()) as unknown as CommentType[];
 
     const commentMap: Record<string, CommentType> = {};
     comments.forEach(

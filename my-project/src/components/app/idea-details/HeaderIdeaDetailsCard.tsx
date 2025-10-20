@@ -40,6 +40,7 @@ type HeaderIdeaDetailsProps = {
   collaboration: CollaborationType | null;
   handleOpenModalCreate: () => void;
   handleOpenModalRequest: () => void;
+  commentsCount: number;
 };
 
 const HeaderIdeaDetails = ({
@@ -51,6 +52,7 @@ const HeaderIdeaDetails = ({
   collaboration,
   handleOpenModalCreate,
   handleOpenModalRequest,
+  commentsCount,
 }: HeaderIdeaDetailsProps) => {
   const router = useRouter();
   const user = useUserStore((state) => state.user);
@@ -217,7 +219,7 @@ const HeaderIdeaDetails = ({
                 size="sm"
                 className="flex items-center">
                 <MessageSquare className="h-4 w-4 mr-1" />
-                <span>18</span>
+                <span>{commentsCount}</span>
               </Button>
             </div>
           </div>

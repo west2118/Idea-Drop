@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,13 +21,16 @@ import { CommentType } from "@/lib/types";
 type CommentIdeaDetailsCard = {
   ideaId: string | null;
   commentsList: CommentType[] | null;
+  commentsCount: number;
 };
 
 const CommentIdeaDetailsCard = ({
   ideaId,
   commentsList,
+  commentsCount,
 }: CommentIdeaDetailsCard) => {
   const token = useUserStore((state) => state.userToken);
+  const user = useUserStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [text, setText] = useState("");
@@ -36,7 +41,10 @@ const CommentIdeaDetailsCard = ({
     }
   }, [commentsList]);
 
-  const handleSubmit = async (parentId = null) => {
+  const handleSubmit = async (
+    comment: string,
+    parentId: string | null = null
+  ) => {
     setIsLoading(true);
 
     try {
@@ -44,15 +52,13 @@ const CommentIdeaDetailsCard = ({
         "/api/comment/postComment",
         {
           ideaId,
-          text,
+          text: comment,
           parentId,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       const newComment = response?.data?.rootComments;
-      setComments((prev) => [...prev, newComment]);
-      setText("");
 
       toast.success(response?.data?.message);
     } catch (error: any) {
@@ -65,15 +71,23 @@ const CommentIdeaDetailsCard = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Discussion (18)</CardTitle>
+        <CardTitle>
+          {commentsCount > 1 ? "Comments" : "Comment"} ({commentsCount})
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* New Comment Form */}
+      <CardContent className="space-y-6 -mt-2">
+        {/* Comment Thread */}
+        {comments.length > 0 && (
+          <CommentList comments={comments} onReply={handleSubmit} />
+        )}
+
         <div className="flex space-x-4">
           <Avatar>
-            <AvatarFallback>Y</AvatarFallback>
+            <AvatarFallback>{`${user?.firstName.charAt(
+              0
+            )}${user?.lastName.charAt(0)}`}</AvatarFallback>
           </Avatar>
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 space-y-4">
             <Textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -81,13 +95,10 @@ const CommentIdeaDetailsCard = ({
               rows={3}
             />
             <div className="flex justify-end">
-              <Button onClick={() => handleSubmit()}>Post Comment</Button>
+              <Button onClick={() => handleSubmit(text)}>Post Comment</Button>
             </div>
           </div>
         </div>
-
-        {/* Comment Thread */}
-        <CommentList />
       </CardContent>
     </Card>
   );
