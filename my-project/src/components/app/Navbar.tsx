@@ -29,10 +29,24 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
+import { UserType } from "@/lib/types";
+import { fetchData } from "@/lib/utils";
+import { Loading } from "./Loading";
+
+type UserResponse = {
+  user: UserType;
+};
 
 const Navbar = () => {
   const router = useRouter();
-  const user = useUserStore((state) => state.user);
+  const token = useUserStore((state) => state.userToken);
+
+  const { data, error, isLoading } = useQuery<UserResponse>({
+    queryKey: ["user-info"],
+    queryFn: fetchData("/api/user/getUser", token),
+    enabled: !!token,
+  });
 
   const handleLogout = async () => {
     try {
@@ -45,9 +59,7 @@ const Navbar = () => {
     }
   };
 
-  const handleSettings = () => {
-    console.log("Opening settings...");
-  };
+  const user = data?.user;
 
   // Safe user data extraction
   const userName = user
@@ -55,8 +67,10 @@ const Navbar = () => {
     : "";
   const userEmail = user?.email || "";
 
+  if (isLoading) return <Loading />;
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <div className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container flex h-16 items-center justify-between mx-auto px-4 sm:px-6">
         <div className="flex items-center space-x-2">
           <Lightbulb className="h-6 w-6 text-blue-600" />
@@ -142,9 +156,7 @@ const Navbar = () => {
                     </>
                   )}
 
-                  <DropdownMenuItem
-                    onClick={handleSettings}
-                    className="cursor-pointer">
+                  <DropdownMenuItem className="cursor-pointer">
                     <Settings className="h-4 w-4" />
                     Settings
                   </DropdownMenuItem>
@@ -174,7 +186,7 @@ const Navbar = () => {
           </div>
         )}
       </div>
-    </header>
+    </div>
   );
 };
 

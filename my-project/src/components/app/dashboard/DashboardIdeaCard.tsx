@@ -68,11 +68,11 @@ const DashboardIdeaCard = ({ idea }: { idea: any }) => {
       <CardFooter className="flex justify-between bg-slate-50 py-3 mt-auto">
         <div className="flex items-center text-slate-500">
           <ThumbsUp className="h-4 w-4 mr-1" />
-          <span className="text-sm">{idea?.upvotes ?? 0}</span>
+          <span className="text-sm">{idea?.reactionCount ?? 0}</span>
         </div>
         <div className="flex items-center text-slate-500">
           <MessageSquare className="h-4 w-4 mr-1" />
-          <span className="text-sm">{idea?.comments ?? 0} comments</span>
+          <span className="text-sm">{idea?.commentCount ?? 0} comments</span>
         </div>
         <Button
           onClick={() => router.push(`/idea/details/${idea?._id}`)}

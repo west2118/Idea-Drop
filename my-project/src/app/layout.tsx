@@ -12,13 +12,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        <main>
-          <UserSyncProvider />
-          <QueryClientContextProvider>{children}</QueryClientContextProvider>
-          <div id="modal-root" />
-          <ToastContainer position="top-right" autoClose={3000} />
-        </main>
+        <QueryClientContextProvider>
+          <Navbar />
+          <main>
+            <UserSyncProvider />
+            {children}
+            <div id="modal-root" />
+            <ToastContainer position="top-right" autoClose={3000} />
+          </main>
+        </QueryClientContextProvider>
       </body>
     </html>
   );

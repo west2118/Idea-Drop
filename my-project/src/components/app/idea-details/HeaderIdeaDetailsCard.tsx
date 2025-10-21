@@ -156,10 +156,6 @@ const HeaderIdeaDetails = ({
             <Clock className="h-4 w-4 mr-1" />
             <span>{idea?.createdAt && formatTimeAgo(idea?.createdAt)}</span>
           </div>
-          <div className="flex items-center">
-            <Eye className="h-4 w-4 mr-1" />
-            <span>245 views</span>
-          </div>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">

@@ -17,6 +17,8 @@ export type IdeaType = {
   };
   attachment: string;
   categories: string[];
+  reactionCount?: number;
+  commentCount?: number;
   tags: string[];
   visibility: "public" | "private" | "only me";
   createdAt: string;

@@ -33,7 +33,7 @@ export default function Dashboard() {
     error: ideasError,
     isLoading: isIdeasLoading,
   } = useQuery<Idea>({
-    queryKey: ["ideas-feed"],
+    queryKey: ["ideas"],
     queryFn: fetchData("/api/idea/getIdeas", token),
     enabled: !!token,
   });

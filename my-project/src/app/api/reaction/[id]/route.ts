@@ -29,7 +29,7 @@ export async function POST(
 
     await Reaction.create({
       user_id: user._id,
-      idea_id: id,
+      ideaId: id,
     });
 
     return NextResponse.json(
@@ -69,7 +69,7 @@ export async function DELETE(
 
     await Reaction.findOneAndDelete({
       user_id: user._id,
-      idea_id: id,
+      ideaId: id,
     });
 
     return NextResponse.json(

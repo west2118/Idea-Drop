@@ -44,16 +44,24 @@ const IdeasFeedDashboard = ({
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {!isIdeasLoading && ideas.length > 0 && (
-            <TabsList className="grid grid-cols-2 w-full max-w-xs mb-2">
-              <TabsTrigger value="latest" className="flex items-center">
-                <Clock className="h-4 w-4 mr-2" />
-                Latest
-              </TabsTrigger>
-              <TabsTrigger value="trending" className="flex items-center">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Trending
-              </TabsTrigger>
-            </TabsList>
+            <div className="flex justify-between items-center">
+              <TabsList className="grid grid-cols-2 w-full max-w-xs mb-2">
+                <TabsTrigger value="latest" className="flex items-center">
+                  <Clock className="h-4 w-4 mr-2" />
+                  Latest
+                </TabsTrigger>
+                <TabsTrigger value="trending" className="flex items-center">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Trending
+                </TabsTrigger>
+              </TabsList>
+
+              {ideas.length >= 8 && (
+                <Link href="/ideas">
+                  <Button variant="outline">View All Ideas</Button>
+                </Link>
+              )}
+            </div>
           )}
 
           <TabsContent value={activeTab} className="mt-2">

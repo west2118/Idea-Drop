@@ -17,11 +17,7 @@ const CollaborationIdeaDetailCard = ({
         <div className="space-y-3">
           <div className="flex justify-between gap-2">
             <span className="text-sm text-slate-600">Status</span>
-            <Badge
-              variant="outline"
-              className={`${
-                collaboration.status ? "text-green-700" : "text-red-700"
-              }`}>
+            <Badge variant="outline">
               {collaboration?.status ? "Open" : "Closed"}
             </Badge>
           </div>
