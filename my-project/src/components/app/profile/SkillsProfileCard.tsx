@@ -22,7 +22,7 @@ const SkillsProfileCard = ({ skills }: { skills: string[] | null }) => {
       <CardContent>
         <div className="flex flex-wrap gap-2">
           {skills?.map((skill) => (
-            <Badge key={skill} variant="secondary" className="text-sm">
+            <Badge key={skill} variant="outline" className="text-sm">
               {skill}
             </Badge>
           ))}

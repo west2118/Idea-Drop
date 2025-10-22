@@ -13,11 +13,11 @@ import IdeasFeedDashboard from "@/components/app/dashboard/IdeasFeedDashboard";
 import { CollaborationsCardDashboardSkeleton } from "@/components/app/skeletons/CollaborationsCardDashboardSkeleton.";
 
 type Idea = {
-  ideas: IdeaType[];
+  items: IdeaType[];
 };
 
 type Collaboration = {
-  collaborations: CollaborationType[];
+  items: CollaborationType[];
 };
 
 type CountResponse = {
@@ -27,14 +27,15 @@ type CountResponse = {
 
 export default function Dashboard() {
   const token = useUserStore((state) => state.userToken);
+  const [activeTab, setActiveTab] = useState("Latest");
 
   const {
     data: idea,
     error: ideasError,
     isLoading: isIdeasLoading,
   } = useQuery<Idea>({
-    queryKey: ["ideas"],
-    queryFn: fetchData("/api/idea/getIdeas", token),
+    queryKey: ["ideas", activeTab],
+    queryFn: fetchData(`/api/idea/getIdeasFeed?tab=${activeTab}`, token),
     enabled: !!token,
   });
 
@@ -58,15 +59,19 @@ export default function Dashboard() {
     enabled: !!token,
   });
 
-  console.log(collaboration?.collaborations);
+  console.log("Active tab: ", activeTab);
+
+  console.log("Idea feed: ", idea?.items);
 
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Content */}
         <IdeasFeedDashboard
-          ideas={idea?.ideas ?? []}
+          ideas={idea?.items ?? []}
           isIdeasLoading={isIdeasLoading}
+          setActiveTab={setActiveTab}
+          activeTab={activeTab}
         />
 
         {/* Sidebar */}
@@ -87,11 +92,9 @@ export default function Dashboard() {
           <WithSkeleton
             isLoading={isCollabLoading}
             skeleton={<CollaborationsCardDashboardSkeleton />}>
-            {collaboration?.collaborations && (
-              <CollaborationsCardDashboard
-                collaborations={collaboration?.collaborations ?? []}
-              />
-            )}
+            <CollaborationsCardDashboard
+              collaborations={collaboration?.items ?? []}
+            />
           </WithSkeleton>
         </div>
       </div>

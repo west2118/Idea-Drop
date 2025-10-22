@@ -1,4 +1,5 @@
 import dbConnect from "@/lib/db";
+import { applyCategoryTagFilters, parseAndBuildQuery } from "@/lib/queryUtils";
 import { verifyToken } from "@/middleware/verifyToken";
 import Collaboration from "@/models/collaboration.model";
 import User from "@/models/user.model";
@@ -22,9 +23,19 @@ export async function GET(req: Request) {
       );
     }
 
-    const collaborations = await Collaboration.find({
+    const { page, limit, skip, search, status } = parseAndBuildQuery(req);
+
+    const query: any = {
       owner: user._id,
-    }).populate("idea_id", "title");
+    };
+    if (search) {
+      query.$or = [{ title: { $regex: search, $options: "i" } }];
+    }
+
+    const collaborations = await Collaboration.find(query)
+      .skip(skip)
+      .limit(limit)
+      .populate("idea_id", "title");
     if (!collaborations) {
       return NextResponse.json(
         { message: "Collaboration didn't exist" },
@@ -32,8 +43,17 @@ export async function GET(req: Request) {
       );
     }
 
+    const filteredCollaborations = applyCategoryTagFilters(collaborations, {
+      status,
+    });
+
     return NextResponse.json(
-      { message: "Collaboration created successfully!", collaborations },
+      {
+        items: filteredCollaborations,
+        page,
+        total: filteredCollaborations.length,
+        totalPages: Math.ceil(filteredCollaborations.length / limit),
+      },
       { status: 200 }
     );
   } catch (error) {

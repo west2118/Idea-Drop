@@ -2,7 +2,6 @@ import dbConnect from "@/lib/db";
 import { applyCategoryTagFilters, parseAndBuildQuery } from "@/lib/queryUtils";
 import { verifyToken } from "@/middleware/verifyToken";
 import Comment from "@/models/comment.model";
-import Favorite from "@/models/favorite.model";
 import Idea from "@/models/idea.model";
 import Reaction from "@/models/reaction.model";
 import User from "@/models/user.model";
@@ -15,6 +14,8 @@ export async function GET(req: Request) {
 
   const { decoded } = result;
 
+  const { searchParams } = new URL(req.url);
+
   try {
     await dbConnect();
 
@@ -26,28 +27,12 @@ export async function GET(req: Request) {
       );
     }
 
-    const { page, limit, skip, search, category, tag } =
-      parseAndBuildQuery(req);
+    const tab = searchParams.get("tab");
 
-    const query: any = { user_id: user._id };
-    if (search) {
-      query.$or = [{ title: { $regex: search, $options: "i" } }];
-    }
-
-    const favorites = await Favorite.find({ user_id: user._id });
-    const favoritesIdeaIds = favorites.map((favorite) =>
-      favorite.idea_id.toString()
-    );
-
-    const favoriteIdeas = await Idea.find({
-      _id: { $in: favoritesIdeaIds },
-    })
-      .skip(skip)
-      .limit(limit)
-      .populate("user_id", "firstName lastName");
+    const ideas = await Idea.find({}).populate("user_id", "firstName lastName");
 
     const ideasWithCount = await Promise.all(
-      favoriteIdeas.map(async (idea) => {
+      ideas.map(async (idea) => {
         const commentCount = await Comment.countDocuments({ ideaId: idea._id });
         const reactionCount = await Reaction.countDocuments({
           ideaId: idea._id,
@@ -61,17 +46,24 @@ export async function GET(req: Request) {
       })
     );
 
-    const filteredIdeas = applyCategoryTagFilters(ideasWithCount, {
-      category,
-      tag,
-    });
+    let items;
+
+    if (tab === "Latest") {
+      items = ideasWithCount.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    } else if (tab === "Trending") {
+      items = ideasWithCount.sort((a, b) => b.reactionCount - a.reactionCount);
+    } else {
+      items = ideasWithCount;
+    }
+
+    items = items.slice(0, 8);
 
     return NextResponse.json(
       {
-        items: filteredIdeas,
-        page,
-        total: filteredIdeas.length,
-        totalPages: Math.ceil(filteredIdeas.length / limit),
+        items,
       },
       { status: 201 }
     );

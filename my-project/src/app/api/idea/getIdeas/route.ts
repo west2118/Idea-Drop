@@ -1,4 +1,5 @@
 import dbConnect from "@/lib/db";
+import { applyCategoryTagFilters, parseAndBuildQuery } from "@/lib/queryUtils";
 import { verifyToken } from "@/middleware/verifyToken";
 import Comment from "@/models/comment.model";
 import Idea from "@/models/idea.model";
@@ -24,28 +25,18 @@ export async function GET(req: Request) {
       );
     }
 
-    const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "6");
-    const skip = (page - 1) * limit;
-    const search = searchParams.get("search");
-    const category = searchParams.get("category");
-    const tag = searchParams.get("tag");
+    const { page, limit, skip, search, category, tag } =
+      parseAndBuildQuery(req);
 
     const query: any = {};
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { tags: { $regex: tag, $options: "i" } },
-        { categories: { $regex: category, $options: "i" } },
-      ];
+      query.$or = [{ title: { $regex: search, $options: "i" } }];
     }
-
-    const total = await Idea.countDocuments(query);
 
     const ideas = await Idea.find(query)
       .skip(skip)
       .limit(limit)
+      .sort({ createdAt: -1 })
       .populate("user_id", "firstName lastName");
 
     const ideasWithCount = await Promise.all(
@@ -63,12 +54,17 @@ export async function GET(req: Request) {
       })
     );
 
+    const filteredIdeas = applyCategoryTagFilters(ideasWithCount, {
+      category,
+      tag,
+    });
+
     return NextResponse.json(
       {
-        ideas: ideasWithCount,
+        items: filteredIdeas,
         page,
-        total,
-        totalPages: Math.ceil(total / limit),
+        total: filteredIdeas.length,
+        totalPages: Math.ceil(filteredIdeas.length / limit),
       },
       { status: 201 }
     );

@@ -12,7 +12,13 @@ import { Badge } from "@/components/ui/badge";
 import { IdeaType } from "@/lib/types";
 import { useRouter } from "next/navigation";
 
-const ProjectIdeasProfileCard = ({ ideas }: { ideas: IdeaType[] | null }) => {
+const ProjectIdeasProfileCard = ({
+  ideas,
+  isOwner,
+}: {
+  ideas: IdeaType[] | null;
+  isOwner: boolean;
+}) => {
   const router = useRouter();
 
   return (
@@ -23,7 +29,7 @@ const ProjectIdeasProfileCard = ({ ideas }: { ideas: IdeaType[] | null }) => {
           Posted Ideas
         </CardTitle>
         <CardDescription>
-          Ideas you've shared with the community
+          Ideas {isOwner ? "you've" : "of user"} shared with the community
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -10,11 +10,14 @@ import {
 import { CollaborationType } from "@/lib/types";
 import { Lightbulb, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import CollaborationItemCardProfile from "./CollaborationItemCardProfile";
 
 const CollaborationProfileCard = ({
   collaborations,
+  isOwner,
 }: {
   collaborations: CollaborationType[] | null;
+  isOwner: boolean;
 }) => {
   const router = useRouter();
 
@@ -26,41 +29,16 @@ const CollaborationProfileCard = ({
           Collaborations
         </CardTitle>
         <CardDescription>
-          Projects you're currently contributing to
+          Projects {isOwner ? "you've" : "of user"} currently contributing to
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {collaborations?.map((collaboration) => (
-            <div
+            <CollaborationItemCardProfile
               key={collaboration._id}
-              className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-              <div>
-                <p className="font-medium">
-                  {typeof collaboration?.idea_id !== "string" &&
-                    collaboration?.idea_id?.title}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {`${
-                    collaboration?.collaborations &&
-                    collaboration?.collaborations?.length - 1
-                  } Collaborators`}
-                </p>
-              </div>
-              <Button
-                onClick={() =>
-                  router.push(
-                    `/idea/details/${
-                      typeof collaboration?.idea_id !== "string" &&
-                      collaboration.idea_id._id
-                    }`
-                  )
-                }
-                variant="ghost"
-                size="icon">
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+              collaboration={collaboration}
+            />
           ))}
         </div>
       </CardContent>

@@ -1,6 +1,9 @@
 import dbConnect from "@/lib/db";
+import { applyCategoryTagFilters, parseAndBuildQuery } from "@/lib/queryUtils";
 import { verifyToken } from "@/middleware/verifyToken";
+import Comment from "@/models/comment.model";
 import Idea from "@/models/idea.model";
+import Reaction from "@/models/reaction.model";
 import User from "@/models/user.model";
 import { NextResponse } from "next/server";
 
@@ -22,12 +25,48 @@ export async function GET(req: Request) {
       );
     }
 
-    const ideas = await Idea.find({ user_id: user._id }).populate(
-      "user_id",
-      "firstName lastName"
+    const { page, limit, skip, search, category, tag } =
+      parseAndBuildQuery(req);
+
+    const query: any = { user_id: user._id };
+    if (search) {
+      query.$or = [{ title: { $regex: search, $options: "i" } }];
+    }
+
+    const ideas = await Idea.find(query)
+      .skip(skip)
+      .limit(limit)
+      .populate("user_id", "firstName lastName");
+
+    const ideasWithCount = await Promise.all(
+      ideas.map(async (idea) => {
+        const commentCount = await Comment.countDocuments({ ideaId: idea._id });
+        const reactionCount = await Reaction.countDocuments({
+          ideaId: idea._id,
+        });
+
+        return {
+          ...idea.toObject(),
+          commentCount,
+          reactionCount,
+        };
+      })
     );
 
-    return NextResponse.json({ ideas }, { status: 201 });
+    const filteredIdeas = applyCategoryTagFilters(ideasWithCount, {
+      category,
+      tag,
+    });
+
+    return NextResponse.json(
+      {
+        items: filteredIdeas,
+        page,
+        total: filteredIdeas.length,
+        totalPages: Math.ceil(filteredIdeas.length / limit),
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.log(error);
     return NextResponse.json(

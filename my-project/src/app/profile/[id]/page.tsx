@@ -154,6 +154,7 @@ export const userData = {
 export default function ProfilePage() {
   const { id } = useParams();
   const token = useUserStore((state) => state.userToken);
+  const user = useUserStore((state) => state.user);
 
   const {
     data: dataUser,
@@ -185,7 +186,7 @@ export default function ProfilePage() {
     enabled: !!token && !!id,
   });
 
-  console.log(dataUser?.user);
+  const isOwner = id === user?._id;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-gray-100 p-6">
@@ -196,7 +197,10 @@ export default function ProfilePage() {
             <WithSkeleton
               isLoading={loadingUser}
               skeleton={<InfoProfileCardSkeleton />}>
-              <InfoProfileCard user={dataUser?.user ?? null} />
+              <InfoProfileCard
+                user={dataUser?.user ?? null}
+                isOwner={isOwner}
+              />
             </WithSkeleton>
 
             <WithSkeleton
@@ -217,16 +221,20 @@ export default function ProfilePage() {
           {/* Middle Column - Stats and Achievements */}
           <div className="lg:col-span-2 space-y-6">
             <WithSkeleton
-              isLoading={loadingUser}
+              isLoading={loadingIdea}
               skeleton={<IdeasCardSkeleton />}>
-              <ProjectIdeasProfileCard ideas={dataIdea?.ideas ?? null} />
+              <ProjectIdeasProfileCard
+                ideas={dataIdea?.ideas ?? null}
+                isOwner={isOwner}
+              />
             </WithSkeleton>
 
             <WithSkeleton
-              isLoading={loadingUser}
+              isLoading={loadingCollaboration}
               skeleton={<CollaborationCardSkeleton />}>
               <CollaborationProfileCard
                 collaborations={dataCollaboration?.collaborations ?? null}
+                isOwner={isOwner}
               />
             </WithSkeleton>
           </div>

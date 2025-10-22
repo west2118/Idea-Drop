@@ -10,10 +10,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UserType } from "@/lib/types";
+import { useUserStore } from "@/stores/useUserStore";
 import { format } from "date-fns";
 import { Calendar, Edit, Heart, LogOut, Mail, MapPin } from "lucide-react";
 
-const InfoProfileCard = ({ user }: { user: UserType | null }) => {
+const InfoProfileCard = ({
+  user,
+  isOwner,
+}: {
+  user: UserType | null;
+  isOwner: boolean;
+}) => {
   return (
     <Card>
       <CardContent className="pt-6">
@@ -41,14 +48,16 @@ const InfoProfileCard = ({ user }: { user: UserType | null }) => {
             </div>
           </div>
 
-          <div className="w-full flex-col space-y-2">
-            <Button className="w-full">
-              <Edit className="h-4 w-4" /> Edit Profile
-            </Button>
-            <Button className="w-full" variant="destructive">
-              <LogOut className="h-4 w-4" /> Log Out
-            </Button>
-          </div>
+          {isOwner && (
+            <div className="w-full flex-col space-y-2">
+              <Button className="w-full">
+                <Edit className="h-4 w-4" /> Edit Profile
+              </Button>
+              <Button className="w-full" variant="destructive">
+                <LogOut className="h-4 w-4" /> Log Out
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

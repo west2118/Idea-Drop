@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Lightbulb } from "lucide-react";
+import Link from "next/link";
 
 type AuthorProfileIdeaDetailCardProps = {
   ownerTotalIdeas: number;
@@ -20,8 +21,6 @@ const AuthorProfileIdeaDetailCard = ({
   ownerTotalIdeas,
   ownerDetails,
 }: AuthorProfileIdeaDetailCardProps) => {
-  console.log("Owner Details: ", ownerDetails);
-
   return (
     <Card>
       <CardHeader>
@@ -42,9 +41,11 @@ const AuthorProfileIdeaDetailCard = ({
           <Lightbulb className="h-4 w-4 mr-1" />
           <span>{ownerTotalIdeas} ideas shared</span>
         </div>
-        <Button variant="outline" className="w-full">
-          View Author
-        </Button>
+        <Link href={`/profile/${ownerDetails?._id}`}>
+          <Button variant="outline" className="w-full">
+            View Author
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   );

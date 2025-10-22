@@ -63,9 +63,11 @@ const CollaborationsCardDashboard = ({
       </CardContent>
       {collaborations.length >= 3 && (
         <CardFooter>
-          <Button variant="outline" size="sm" className="w-full">
-            View All Projects
-          </Button>
+          <Link href="/collaborations">
+            <Button variant="outline" size="sm" className="w-full">
+              View All Projects
+            </Button>
+          </Link>
         </CardFooter>
       )}
     </Card>
