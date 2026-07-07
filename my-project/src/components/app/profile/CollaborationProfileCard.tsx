@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,8 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CollaborationType } from "@/lib/types";
-import { Lightbulb, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Lightbulb } from "lucide-react";
 import CollaborationItemCardProfile from "./CollaborationItemCardProfile";
 
 const CollaborationProfileCard = ({
@@ -19,7 +20,7 @@ const CollaborationProfileCard = ({
   collaborations: CollaborationType[] | null;
   isOwner: boolean;
 }) => {
-  const router = useRouter();
+
 
   return (
     <Card>

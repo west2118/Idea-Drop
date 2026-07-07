@@ -50,7 +50,6 @@ export type CollaborationType = {
 
 export type UserType = {
   _id: string;
-  uid: string;
   email: string;
   firstName: string;
   lastName: string;

@@ -39,7 +39,11 @@ const CollaborationSchema = new Schema({
   ],
   lookingFor: { type: [String], required: true },
   notes: { type: String, required: true },
-  status: { type: Boolean, default: true },
+  status: { 
+    type: String, 
+    enum: ["active", "completed", "cancelled"], 
+    default: "active" 
+  },
 });
 
 const Collaboration =

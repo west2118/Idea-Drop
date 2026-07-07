@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,20 +8,22 @@ import { IdeaType } from "@/lib/types";
 import { WithSkeleton } from "../WithSkeleton";
 import { DashboardIdeaCardSkeleton } from "../skeletons/dashboard/DashboardIdeaCardSkeleton";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import IdeaFeedNoData from "../no-data/IdeaFeedNoData";
 
 const IdeasFeedDashboard = ({
   ideas,
-  isIdeasLoading,
-  setActiveTab,
   activeTab,
 }: {
-  ideas: IdeaType[];
-  isIdeasLoading: boolean;
-  setActiveTab: (tab: string) => void;
+  ideas: any[];
   activeTab: string;
 }) => {
   const [viewMode, setViewMode] = useState("grid");
+  const router = useRouter();
+
+  const handleTabChange = (tab: string) => {
+    router.push(`/dashboard?tab=${tab}`);
+  };
 
   return (
     <div className="lg:col-span-3">
@@ -43,7 +46,7 @@ const IdeasFeedDashboard = ({
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <div className="flex justify-between items-center">
             <TabsList className="grid grid-cols-2 w-full max-w-xs mb-2">
               <TabsTrigger value="Latest" className="flex items-center">
@@ -70,17 +73,13 @@ const IdeasFeedDashboard = ({
                   ? "grid grid-cols-1 md:grid-cols-2 gap-6"
                   : "space-y-6"
               }>
-              <WithSkeleton
-                isLoading={isIdeasLoading}
-                skeleton={<DashboardIdeaCardSkeleton />}>
                 {ideas && ideas.length > 0 ? (
                   ideas?.map((idea: any) => (
-                    <DashboardIdeaCard key={idea.title} idea={idea} />
+                    <DashboardIdeaCard key={idea._id || idea.title} idea={idea} />
                   ))
                 ) : (
                   <IdeaFeedNoData />
                 )}
-              </WithSkeleton>
             </div>
           </TabsContent>
         </Tabs>

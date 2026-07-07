@@ -33,8 +33,7 @@ import TipsCard from "@/components/app/TipsCard";
 import ImageUpload from "@/components/app/ImageUploader";
 import { useImageUploader } from "@/hooks/useImageUploader";
 import { visibilityTypes } from "@/constants/visibility";
-import axios from "axios";
-import { useUserStore } from "@/stores/useUserStore";
+import { postIdea } from "@/lib/actions/idea.actions";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { categoryLimit, tagLimit } from "@/lib/constants";
@@ -51,7 +50,6 @@ type ImageType = "attachment";
 
 export default function PostIdeaPage() {
   const router = useRouter();
-  const token = useUserStore((state) => state.userToken);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [visibility, setVisibility] = useState("public");
   const [categoryAdd, setCategoryAdd] = useState("");
@@ -89,9 +87,24 @@ export default function PostIdeaPage() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    if (!formData.title || !formData.description || !formData.works || !formData.benefits || !formData.conclusion) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    if (categories.length === 0) {
+      toast.error("Please add at least one category.");
+      return;
+    }
+
+    if (tags.length === 0) {
+      toast.error("Please add at least one tag.");
+      return;
+    }
+
     setIsLoading(true);
 
-    let imageUrls = [];
+    let imageUrls: any[] = [];
 
     imageUrls = (await handleUploadImages()) ?? [];
 
@@ -113,23 +126,19 @@ export default function PostIdeaPage() {
     }
 
     try {
-      const response = await axios.post(
-        "/api/idea/postIdea",
-        { ...newData },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await postIdea(newData);
 
       router.push("/dashboard");
-      toast.success(response?.data.message);
+      toast.success("Idea dropped successfully");
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-3xl mx-auto px-4">
         <div className="flex items-center space-x-2 mb-6">
           <Lightbulb className="h-8 w-8 text-blue-600" />
@@ -155,6 +164,7 @@ export default function PostIdeaPage() {
                   value={formData.title}
                   id="title"
                   placeholder="A clear, concise title for your idea"
+                  required
                 />
               </div>
 
@@ -186,6 +196,12 @@ export default function PostIdeaPage() {
                   <Input
                     value={categoryAdd}
                     onChange={(e) => setCategoryAdd(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleCategoryAdd();
+                      }
+                    }}
                     placeholder="Add category (e.g., Technology, Design)"
                   />
                   <Button
@@ -223,6 +239,7 @@ export default function PostIdeaPage() {
                   placeholder="Describe your idea in detail. What problem does it solve? How does it work? What makes it unique?"
                   rows={6}
                   className="resize-none"
+                  required
                 />
               </div>
 
@@ -236,6 +253,7 @@ export default function PostIdeaPage() {
                   placeholder="Describe how your solution works in detail. What technologies are involved? How does it solve the problem?"
                   rows={6}
                   className="resize-none"
+                  required
                 />
               </div>
 
@@ -249,6 +267,7 @@ export default function PostIdeaPage() {
                   placeholder="List the benefits of your idea, separated by commas. Example: Reduces costs, Increases efficiency, Positive environmental impact, User-friendly"
                   rows={6}
                   className="resize-none"
+                  required
                 />
               </div>
 
@@ -262,6 +281,7 @@ export default function PostIdeaPage() {
                   placeholder="Describe how your idea is unique and what differentiates it from existing solutions."
                   rows={6}
                   className="resize-none"
+                  required
                 />
               </div>
 
@@ -294,6 +314,12 @@ export default function PostIdeaPage() {
                   <Input
                     value={tagAdd}
                     onChange={(e) => setTagAdd(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleTagAdd();
+                      }
+                    }}
                     placeholder="Add tags (e.g., Technology, Design)"
                   />
                   <Button

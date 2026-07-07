@@ -22,13 +22,16 @@ import {
   Clock,
   Eye,
   BookmarkCheck,
+  X,
 } from "lucide-react";
 import { CollaborationType, IdeaType } from "@/lib/types";
 import { formatTimeAgo } from "@/lib/utils";
 import { useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useUserStore } from "@/stores/useUserStore";
+import { addFavorite, removeFavorite } from "@/lib/actions/favorite.actions";
+import { addReaction, removeReaction } from "@/lib/actions/reaction.actions";
+import { cancelCollaborationRequest } from "@/lib/actions/collaboration.actions";
 import { useRouter } from "next/navigation";
 
 type HeaderIdeaDetailsProps = {
@@ -60,60 +63,58 @@ const HeaderIdeaDetails = ({
   const [isFavorite, setIsFavorite] = useState(isFavorited);
   const [isReact, setIsReact] = useState(isReacted);
   const [currentReactionCount, setCurrentReactionCount] = useState(reactions);
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  const hasRequested = collaboration?.requests?.some(
+    (req: any) =>
+      (typeof req.user === "string" ? req.user : req.user?._id) === user?._id &&
+      req.status === "pending"
+  );
+
+  const handleCancelRequest = async () => {
+    if (!idea?._id) return;
+    setIsCancelling(true);
+    try {
+      await cancelCollaborationRequest(idea._id);
+      toast.success("Request cancelled");
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   const handleToggleFavorite = async () => {
-    if (!idea?._id || !token) return;
-
+    if (!idea?._id) return;
     try {
       if (isFavorite) {
-        const response = await axios.delete(`/api/favorite/${idea?._id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await removeFavorite(idea._id);
         setIsFavorite(false);
-
-        toast.success(response?.data?.message);
+        toast.success("Removed from favorites");
       } else {
-        const response = await axios.post(
-          `/api/favorite/${idea?._id}`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        await addFavorite(idea._id);
         setIsFavorite(true);
-
-        toast.success(response?.data?.message);
+        toast.success("Added to favorites");
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(error.message);
     }
   };
 
   const handleToggleReaction = async () => {
-    if (!idea?._id || !token) return;
-
+    if (!idea?._id) return;
     try {
       if (isReact) {
-        await axios.delete(`/api/reaction/${idea?._id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
+        await removeReaction(idea._id);
         setIsReact(false);
         setCurrentReactionCount((prev) => Math.max(prev - 1, 0));
       } else {
-        await axios.post(
-          `/api/reaction/${idea?._id}`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
+        await addReaction(idea._id);
         setIsReact(true);
         setCurrentReactionCount((prev) => prev + 1);
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(error.message);
     }
   };
 
@@ -220,30 +221,42 @@ const HeaderIdeaDetails = ({
             </div>
           </div>
 
-          {idea?.user_id._id === user?._id ? (
+          {idea?.user_id?._id && user?._id && idea.user_id._id === user._id ? (
             // 👤 Owner
             collaboration ? (
               <Button
-                onClick={() => router.push(`/collaboration/${idea?._id}`)}
+                onClick={() => router.push(`/collaboration/${collaboration?._id}`)}
                 className="bg-green-600 hover:bg-green-700">
-                <Users className="h-4 w-4" />
+                <Users className="h-4 w-4 mr-2" />
                 View Collaboration
               </Button>
             ) : (
               <Button
                 onClick={handleOpenModalCreate}
                 className="bg-blue-600 hover:bg-blue-700">
-                <Users className="h-4 w-4" />
+                <Users className="h-4 w-4 mr-2" />
                 Create Collaboration
               </Button>
             )
           ) : collaboration ? (
-            <Button
-              onClick={handleOpenModalRequest}
-              className="hover:bg-blue-700 bg-blue-600">
-              <Users className="h-4 w-4" />
-              Request Collaboration
-            </Button>
+            // 👤 Non-Owner
+            hasRequested ? (
+              <Button
+                onClick={handleCancelRequest}
+                disabled={isCancelling}
+                variant="outline"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                <X className="h-4 w-4 mr-2" />
+                Cancel Request
+              </Button>
+            ) : (
+              <Button
+                onClick={handleOpenModalRequest}
+                className="hover:bg-blue-700 bg-blue-600">
+                <Users className="h-4 w-4 mr-2" />
+                Request Collaboration
+              </Button>
+            )
           ) : (
             ""
           )}

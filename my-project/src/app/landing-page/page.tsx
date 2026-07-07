@@ -75,7 +75,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="max-w-6xl mx-auto px-6 py-16 flex flex-col md:flex-row items-center">
         <div className="md:w-1/2 mb-10 md:mb-0">
@@ -173,7 +173,7 @@ export default function LandingPage() {
       </section>
 
       {/* Trending Ideas Section */}
-      <section className="py-16 bg-slate-50">
+      <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex justify-between items-center mb-12">
             <h2 className="text-3xl font-bold">Trending Ideas</h2>

@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { IdeaType } from "@/lib/types";
-import { fetchData } from "@/lib/utils";
-import { useUserStore } from "@/stores/useUserStore";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { Grid, List, Search } from "lucide-react";
 import React, { useState } from "react";
 import {
@@ -24,9 +22,7 @@ import { listTags } from "@/constants/tags";
 
 type DataListPageProps<T> = {
   title: string;
-  queryKey: string[];
-  apiUrl: string;
-  token: string;
+  fetchAction: (params: any) => Promise<{ items: T[]; total?: number; totalPages?: number }>;
   limit?: number;
   renderItem: (item: T) => React.ReactNode;
   skeleton: React.ReactNode;
@@ -36,9 +32,7 @@ type DataListPageProps<T> = {
 
 export function DataListPage<T>({
   title,
-  queryKey,
-  apiUrl,
-  token,
+  fetchAction,
   limit = 6,
   renderItem,
   skeleton,
@@ -55,33 +49,32 @@ export function DataListPage<T>({
   const debouncedSearch = useDebounceInput(search);
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useQuery<{
-    items: T[];
-    total: number;
-    totalPages: number;
-  }>({
-    queryKey: [
-      ...queryKey,
+  const [data, setData] = useState<{ items: T[]; total: number; totalPages: number }>({ items: [], total: 0, totalPages: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchAction({
       page,
       limit,
-      debouncedSearch,
+      search: debouncedSearch,
       category,
       tag,
       status,
-    ],
-    queryFn: fetchData(
-      `${apiUrl}?page=${page}${
-        category !== "All" ? `&category=${category}` : ""
-      }${tag !== "All" ? `&tag=${tag}` : ""}${
-        status !== "All" ? `&status=${status}` : ""
-      }&limit=${limit}${debouncedSearch ? `&search=${debouncedSearch}` : ""}`,
-      token
-    ),
-    enabled: !!token,
-  });
+    })
+      .then((res: any) => {
+        setData({
+          items: res.items || [],
+          total: res.total || 0,
+          totalPages: res.totalPages || 0,
+        });
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setIsLoading(false));
+  }, [fetchAction, page, limit, debouncedSearch, category, tag, status]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto p-4">
         <div className="bg-white rounded-lg border border-slate-200 p-6">
           <div className="flex justify-between items-center mb-4">

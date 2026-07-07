@@ -33,24 +33,39 @@ const CollaborationsCardDashboard = ({
             collaborations.map((collaboration, index) => (
               <div key={index} className="space-y-2">
                 <div className="flex justify-between items-start">
-                  <Link
-                    href={`/collaboration/${collaboration._id}`}
-                    className="text-sm font-medium hover:text-gray-600">
-                    {typeof collaboration?.idea_id !== "string" &&
-                      collaboration?.idea_id?.title}
-                  </Link>
-                  <Badge variant="outline">
-                    {collaboration?.collaborations?.length ?? 0} members
-                  </Badge>
+                  <div className="space-x-2">
+                    <Link
+                      href={`/collaboration/${collaboration._id}`}
+                      className="text-sm font-medium hover:text-gray-600">
+                      {typeof collaboration?.idea_id !== "string" &&
+                        collaboration?.idea_id?.title}
+                    </Link>
+                    <Badge
+                      variant="secondary"
+                      className={
+                        collaboration.status === "active" || collaboration.status === true as any ? "bg-green-100 text-green-800 hover:bg-green-100" :
+                          collaboration.status === "completed" ? "bg-blue-100 text-blue-800 hover:bg-blue-100" :
+                            "bg-red-100 text-red-800 hover:bg-red-100"
+                      }
+                    >
+                      {collaboration.status === "active" || collaboration.status === true as any ? "Active" :
+                        collaboration.status === "completed" ? "Completed" : "Cancelled"}
+                    </Badge>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <Badge variant="outline">
+                      {collaboration?.collaborations?.length ?? 0} members
+                    </Badge>
+                  </div>
                 </div>
                 <div className="w-full bg-slate-200 rounded-full h-2">
                   <div
                     className="bg-blue-600 h-2 rounded-full"
-                    style={{ width: `${66}%` }}></div>
+                    style={{ width: `${(collaboration as any).progressPercent ?? 0}%` }}></div>
                 </div>
                 <div className="flex justify-between text-xs text-slate-500">
                   <span>Progress</span>
-                  <span>{66}%</span>
+                  <span>{(collaboration as any).progressPercent ?? 0}%</span>
                 </div>
               </div>
             ))

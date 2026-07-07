@@ -38,26 +38,6 @@ export const handleAdd = (
   setValue("");
 };
 
-export const fetchData =
-  <T>(url: string, token: string | null, withParams = false) =>
-  async ({ queryKey }: { queryKey: any }): Promise<T> => {
-    const [_key, params] = queryKey ?? [];
-    const finalUrl = withParams ? `${url.replace(/\/$/, "")}/${params}` : url;
-
-    try {
-      const headers: Record<string, string> = {};
-      if (token) headers.Authorization = `Bearer ${token}`;
-
-      const res = await axios.get(finalUrl, { headers });
-      return res.data;
-    } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || error.message);
-      }
-      throw new Error("Unexpected error occurred");
-    }
-  };
-
 export const formatTimeAgo = (date: string) => {
   return formatDistance(date, new Date(), { addSuffix: true });
 };

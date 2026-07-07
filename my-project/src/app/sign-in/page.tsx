@@ -25,9 +25,9 @@ import {
 import Link from "next/link";
 import { useForm } from "@/hooks/useForm";
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import axios from "axios";
+import { authenticateAndCreateUser } from "@/lib/actions/auth.actions";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -39,10 +39,13 @@ type FormData = {
 export default function SignInPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
   const { formData, handleChange } = useForm<FormData>({
     email: "",
     password: "",
   });
+
+  const provider = new GoogleAuthProvider();
 
   const handleLoginWithEmail = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -57,27 +60,48 @@ export default function SignInPage() {
 
       const token = await userCredential.user.getIdToken();
 
-      const response = await axios.post("/api/auth", {
-        token,
-        email: formData.email,
-      });
+      const response = await authenticateAndCreateUser(token, {});
 
-      if (response?.data?.user?.firstName) {
+      if (response.success && (response.user as any)?.firstName) {
         router.push("/dashboard");
       } else {
         router.push("/onboarding");
       }
 
       toast.success("Logged In Successfully");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+    } catch (error: unknown) {
+      toast.error((error as Error).message);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleLoginWithGmail = async () => {
+    setIsGoogleLoading(true);
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const token = await user.getIdToken();
+
+      const response = await authenticateAndCreateUser(token, {});
+
+      toast.success("Logged In Successfully!");
+
+      if (response.success && (response.user as any)?.firstName) {
+        router.push("/dashboard");
+      } else {
+        router.push("/onboarding");
+      }
+    } catch (error: unknown) {
+      toast.error((error as Error).message);
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-10 -mt-[66px]">
+    <div className="min-h-screen flex items-center justify-center p-10">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
@@ -162,22 +186,21 @@ export default function SignInPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline">
-              <Github className="mr-2 h-4 w-4" />
-              Github
-            </Button>
-            <Button variant="outline">
-              <Chrome className="mr-2 h-4 w-4" />
-              Google
-            </Button>
-          </div>
+          <Button
+            className="w-full"
+            type="button"
+            disabled={isGoogleLoading}
+            onClick={handleLoginWithGmail}
+            variant="outline">
+            <Chrome className="mr-2 h-4 w-4" />
+            Google
+          </Button>
 
           <div className="text-center text-sm">
             Don't have an account?{" "}
-            <a href="#" className="text-primary hover:underline">
+            <Link href="/sign-up" className="text-primary hover:underline">
               Sign up
-            </a>
+            </Link>
           </div>
         </CardContent>
       </Card>

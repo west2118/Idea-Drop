@@ -30,12 +30,11 @@ const DashboardIdeaCard = ({ idea }: { idea: any }) => {
                 <AvatarFallback>{`${idea?.user_id.firstName
                   .charAt(0)
                   .toUpperCase()}${idea?.user_id.lastName
-                  .charAt(0)
-                  .toUpperCase()}`}</AvatarFallback>
+                    .charAt(0)
+                    .toUpperCase()}`}</AvatarFallback>
               </Avatar>
-              {`${idea?.user_id.firstName} ${
-                idea?.user_id.lastName
-              } • ${formatTimeAgo(idea?.createdAt)}`}
+              {`${idea?.user_id.firstName} ${idea?.user_id.lastName
+                } • ${formatTimeAgo(idea?.createdAt)}`}
             </div>
             <div>
               <Badge variant="default" className="text-xs">

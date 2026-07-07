@@ -39,8 +39,8 @@ export function applyCategoryTagFilters(
   if (filters.status) {
     filtered = filtered.filter((item) =>
       filters.status === "Actived"
-        ? item.status === true
-        : item.status === false
+        ? item.status === "active"
+        : item.status !== "active"
     );
   }
 

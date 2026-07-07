@@ -1,4 +1,4 @@
-import { Search, RefreshCw } from "lucide-react";
+import { Search } from "lucide-react";
 import React from "react";
 
 const IdeaNoResult = ({ content = "Ideas" }: { content?: string }) => {

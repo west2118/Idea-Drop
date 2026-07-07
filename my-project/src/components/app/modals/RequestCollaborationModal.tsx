@@ -1,15 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { X, Users, Code2, Cpu, Smartphone, MessageSquare } from "lucide-react";
+import { X, Users, MessageSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CollaborationType, IdeaType } from "@/lib/types";
 import { useUserStore } from "@/stores/useUserStore";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import axios from "axios";
+
+import { requestCollaboration } from "@/lib/actions/collaboration.actions";
 
 type RequestCollaborationModalProps = {
   isModalOpen: boolean;
@@ -24,7 +25,7 @@ export default function RequestCollaborationModal({
   idea,
   collaboration,
 }: RequestCollaborationModalProps) {
-  const token = useUserStore((state) => state.userToken);
+
   const user = useUserStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -51,20 +52,16 @@ export default function RequestCollaborationModal({
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
+    if (!idea?._id) return;
     setIsLoading(true);
 
     try {
-      const response = await axios.put(
-        "/api/collaboration/putRequestCollaboration",
-        { idea_id: idea?._id, message },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await requestCollaboration({ idea_id: idea._id, message });
 
       isCloseModal();
-      toast.success(response?.data.message);
+      toast.success(response.message);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -115,7 +112,7 @@ export default function RequestCollaborationModal({
                       </h3>
 
                       <Badge variant="outline" className="text-xs">
-                        {collaboration?.status ? "Open" : "Closed"}
+                        {collaboration?.status === "active" ? "Open" : collaboration?.status === "completed" ? "Completed" : "Cancelled"}
                       </Badge>
                     </div>
 

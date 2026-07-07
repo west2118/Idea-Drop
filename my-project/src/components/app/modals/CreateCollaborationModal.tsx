@@ -25,7 +25,7 @@ import { lookingForLimit } from "@/lib/constants";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/useUserStore";
-import axios from "axios";
+import { postCollaboration } from "@/lib/actions/collaboration.actions";
 
 type CreateCollaborationModalProps = {
   isModalOpen: boolean;
@@ -77,27 +77,20 @@ export default function CreateCollaborationModal({
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    if (!idea_id) return;
     setIsLoading(true);
 
-    const newData = {
-      idea_id,
-      lookingFor,
-      notes,
-    };
-
     try {
-      const response = await axios.post(
-        "/api/collaboration/postCollaboration",
-        { ...newData },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const result = await postCollaboration({
+        idea_id,
+        lookingFor,
+        notes,
+      });
 
-      const data = await response.data;
-
-      toast.success(data.message);
-      router.push(`/collaboration/${data.newCollaboration._id}`);
+      toast.success("Collaboration created successfully!");
+      router.push(`/collaboration/${result.newCollaboration._id}`);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }

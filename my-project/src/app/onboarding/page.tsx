@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, ArrowRight } from "lucide-react";
 import { useForm } from "@/hooks/useForm";
-import axios from "axios";
+import { authenticateAndCreateUser } from "@/lib/actions/auth.actions";
 import { toast } from "react-toastify";
 import { useUserStore } from "@/stores/useUserStore";
 import { useRouter } from "next/navigation";
@@ -34,15 +34,16 @@ export default function OnboardingPage() {
     e.preventDefault();
 
     try {
-      await axios.post("/api/auth", {
-        token,
+      if (!token) throw new Error("Authentication token is missing.");
+
+      await authenticateAndCreateUser(token, {
         firstName: formData.firstName,
         lastName: formData.lastName,
       });
 
       router.push("/profile");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+    } catch (error: unknown) {
+      toast.error((error as Error).message);
     }
   };
 

@@ -23,8 +23,8 @@ const CollaborationItemCardCollaborations = ({
             {typeof collaboration?.idea_id !== "string" &&
               collaboration?.idea_id?.title}
           </CardTitle>
-          <Badge variant={collaboration.status ? "default" : "secondary"}>
-            {collaboration.status ? "Active" : "Closed"}
+          <Badge variant={collaboration.status === "active" ? "default" : "secondary"}>
+            {collaboration.status === "active" ? "Active" : collaboration.status === "completed" ? "Completed" : "Cancelled"}
           </Badge>
         </CardHeader>
 

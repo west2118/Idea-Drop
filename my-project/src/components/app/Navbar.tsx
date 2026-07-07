@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -9,13 +10,15 @@ import {
   Settings,
   LogOut,
   Bell,
-  LinkIcon,
   Heart,
+  Menu,
+  X,
+  Users,
 } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { useUserStore } from "@/stores/useUserStore";
+
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import {
@@ -29,27 +32,22 @@ import {
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { toast } from "react-toastify";
-import { useQuery } from "@tanstack/react-query";
-import { UserType } from "@/lib/types";
-import { fetchData } from "@/lib/utils";
-import { Loading } from "./Loading";
+import { clearAuthCookie } from "@/lib/actions/auth.actions";
+import { useUserStore } from "@/stores/useUserStore";
+import { useRef } from "react";
 
-type UserResponse = {
-  user: UserType;
-};
-
-const Navbar = () => {
+const Navbar = ({ user }: { user: any }) => {
   const router = useRouter();
-  const token = useUserStore((state) => state.userToken);
 
-  const { data, error, isLoading } = useQuery<UserResponse>({
-    queryKey: ["user-info"],
-    queryFn: fetchData("/api/user/getUser", token),
-    enabled: !!token,
-  });
+  const initialized = useRef(false);
+  if (!initialized.current) {
+    useUserStore.setState({ user });
+    initialized.current = true;
+  }
 
   const handleLogout = async () => {
     try {
+      await clearAuthCookie();
       await signOut(auth);
       router.push("/sign-in");
 
@@ -59,23 +57,19 @@ const Navbar = () => {
     }
   };
 
-  const user = data?.user;
-
   // Safe user data extraction
   const userName = user
     ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
     : "";
   const userEmail = user?.email || "";
 
-  if (isLoading) return <Loading />;
-
   return (
     <div className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container flex h-16 items-center justify-between mx-auto px-4 sm:px-6">
-        <div className="flex items-center space-x-2">
+        <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
           <Lightbulb className="h-6 w-6 text-blue-600" />
           <span className="text-xl font-bold">IdeaDrop</span>
-        </div>
+        </Link>
 
         {user ? (
           <>
@@ -102,12 +96,17 @@ const Navbar = () => {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end" className="w-42">
-                  <DropdownMenuItem className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push("/idea/post")} className="cursor-pointer">
                     <Plus className="h-4 w-4" />
                     New Idea
                   </DropdownMenuItem>
 
                   <DropdownMenuSeparator />
+
+                  <DropdownMenuItem onClick={() => router.push("/collaborations")} className="cursor-pointer">
+                    <Users className="h-4 w-4" />
+                    Collaborations
+                  </DropdownMenuItem>
 
                   <DropdownMenuItem className="cursor-pointer">
                     <Heart className="h-4 w-4" />
@@ -115,14 +114,6 @@ const Navbar = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full p-0">
-                <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-                  <Bell className="h-4 w-4 text-black" />
-                </div>
-              </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

@@ -18,7 +18,7 @@ const CollaborationIdeaDetailCard = ({
           <div className="flex justify-between gap-2">
             <span className="text-sm text-slate-600">Status</span>
             <Badge variant="outline">
-              {collaboration?.status ? "Open" : "Closed"}
+              {collaboration?.status === "active" ? "Open" : collaboration?.status === "completed" ? "Completed" : "Cancelled"}
             </Badge>
           </div>
           <div className="flex justify-between gap-2">

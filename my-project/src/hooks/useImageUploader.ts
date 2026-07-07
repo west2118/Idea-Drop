@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -35,7 +36,7 @@ export const useImageUploader = <T extends string>(initialTypes: T[]) => {
     for (const key in images) {
       const typedKey = key as T;
       const file = images[typedKey].file;
-      if (!file) return;
+      if (!file) continue;
 
       if (typeof file === "string") {
         uploadedUrls.push({

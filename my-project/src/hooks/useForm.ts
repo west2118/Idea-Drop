@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 
 export function useForm<T extends Record<string, any>>(initialValue: T) {

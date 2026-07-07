@@ -32,8 +32,9 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import axios from "axios";
+import { authenticateAndCreateUser } from "@/lib/actions/auth.actions";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type FormData = {
   firstName: string;
@@ -88,8 +89,7 @@ export default function SignUpPage() {
       await sendEmailVerification(user);
 
       const token = await user.getIdToken();
-      await axios.post("/api/auth", {
-        token,
+      await authenticateAndCreateUser(token, {
         firstName: formData.firstName,
         lastName: formData.lastName,
       });
@@ -100,7 +100,7 @@ export default function SignUpPage() {
 
       router.push("/profile");
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -114,24 +114,24 @@ export default function SignUpPage() {
       const user = result.user;
       const token = await user.getIdToken();
 
-      const response = await axios.post("/api/auth", { token });
+      const response = await authenticateAndCreateUser(token, {});
 
       toast.success("Account Created Successfully!");
 
-      if (response?.data?.user?.firstName) {
+      if (response.success && (response.user as any)?.firstName) {
         router.push("/dashboard");
       } else {
         router.push("/onboarding");
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(error.message);
     } finally {
       setIsGoogleLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-10 -mt-[66px]">
+    <div className="min-h-screen flex items-center justify-center p-10">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
@@ -279,9 +279,9 @@ export default function SignUpPage() {
 
             <div className="text-center text-sm">
               Already have an account?{" "}
-              <a href="#" className="text-primary hover:underline">
+              <Link href="/sign-in" className="text-primary hover:underline">
                 Sign in
-              </a>
+              </Link>
             </div>
           </form>
         </CardContent>

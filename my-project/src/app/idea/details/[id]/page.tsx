@@ -1,159 +1,24 @@
-"use client";
+import { getIdeaById } from "@/lib/actions/idea.actions";
+import { getComments } from "@/lib/actions/comment.actions";
+import IdeaDetailClient from "./IdeaDetailClient";
 
-import { useParams } from "next/navigation";
-import { useUserStore } from "@/stores/useUserStore";
-import { useQuery } from "@tanstack/react-query";
-import { CollaborationType, CommentType, IdeaType } from "@/lib/types";
-import { fetchData, formatTimeAgo } from "@/lib/utils";
-import HeaderIdeaDetails from "@/components/app/idea-details/HeaderIdeaDetailsCard";
-import HeaderIdeaDetailsSkeleton from "@/components/app/skeletons/HeaderIdeaDetailsSkeleton";
-import { WithSkeleton } from "@/components/app/WithSkeleton";
-import CommentIdeaDetailsCard from "@/components/app/idea-details/CommentIdeaDetailsCard";
-import { useState } from "react";
-import AuthorProfileIdeaDetailCard from "@/components/app/idea-details/AuthorProfileIdeaDetailCard";
-import RelatedIdeaDetailCard from "@/components/app/idea-details/RelatedIdeaDetailCard";
-import CollaborationIdeaDetailCard from "@/components/app/idea-details/CollaborationIdeaDetailCard";
-import AuthorProfileIdeaDetailSkeleton from "@/components/app/skeletons/AuthorProfileIdeaDetailSkeleton";
-import RelatedIdeaDetailCardSkeleton from "@/components/app/skeletons/RelatedIdeaDetailCardSkeleton";
-import CollaborationIdeaDetailCardSkeleton from "@/components/app/skeletons/CollaborationIdeaDetailCardSkeleton";
-import CreateCollaborationModal from "@/components/app/modals/CreateCollaborationModal";
-import RequestCollaborationModal from "@/components/app/modals/RequestCollaborationModal";
-import { countCommentsAndReplies } from "@/lib/constants";
+export default async function IdeaDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
-type IdeaDetails = {
-  idea: IdeaType;
-  isFavorited: boolean;
-  isReacted: boolean;
-  reactions: number;
-  ownerTotalIdeas: number;
-  relatedIdeas: IdeaType[] | [];
-  collaboration: CollaborationType;
-};
+  try {
+    const [ideaDetails, commentsResponse] = await Promise.all([
+      getIdeaById(id),
+      getComments(id)
+    ]);
 
-type CommentResponse = {
-  rootComments: CommentType[];
-};
-
-export default function IdeaDetailPage() {
-  const { id } = useParams();
-  const token = useUserStore((state) => state.userToken);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
-  const [isShowComment, setIsShowComment] = useState(false);
-
-  const { data, error, isLoading } = useQuery<IdeaDetails>({
-    queryKey: ["idea-details", id],
-    queryFn: fetchData(`/api/idea/${id}`, token),
-    enabled: !!token && !!id,
-  });
-
-  const {
-    data: commentData,
-    error: commentError,
-    isLoading: commentLoading,
-  } = useQuery<CommentResponse>({
-    queryKey: ["comments", id],
-    queryFn: fetchData(`/api/comment/getComments/${id}`, token),
-    enabled: !!token && !!id,
-  });
-
-  console.log("Comments: ", commentData?.rootComments);
-
-  const handleToggleShowComment = () => {
-    setIsShowComment((prev) => !prev);
-  };
-
-  const handleOpenModalCreate = () => {
-    setIsCreateModalOpen(true);
-  };
-
-  const handleOpenModalRequest = () => {
-    setIsRequestModalOpen(true);
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Main Content */}
-        <div className="lg:col-span-3 space-y-6">
-          {/* Idea Header */}
-          <WithSkeleton
-            isLoading={isLoading}
-            skeleton={<HeaderIdeaDetailsSkeleton />}>
-            <HeaderIdeaDetails
-              idea={data?.idea ?? null}
-              isFavorited={data?.isFavorited ?? null}
-              isReacted={data?.isReacted ?? null}
-              reactions={data?.reactions ?? 0}
-              toggleComment={handleToggleShowComment}
-              collaboration={data?.collaboration ?? null}
-              handleOpenModalCreate={handleOpenModalCreate}
-              handleOpenModalRequest={handleOpenModalRequest}
-              commentsCount={
-                countCommentsAndReplies(commentData?.rootComments!) ?? 0
-              }
-            />
-          </WithSkeleton>
-
-          {/* Comments Section */}
-          {isShowComment && (
-            <CommentIdeaDetailsCard
-              ideaId={data?.idea._id ?? null}
-              commentsList={commentData?.rootComments ?? null}
-              commentsCount={
-                countCommentsAndReplies(commentData?.rootComments!) ?? 0
-              }
-            />
-          )}
-        </div>
-
-        {/* Sidebar */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* Author Profile */}
-          <WithSkeleton
-            isLoading={isLoading}
-            skeleton={<AuthorProfileIdeaDetailSkeleton />}>
-            <AuthorProfileIdeaDetailCard
-              ownerTotalIdeas={data?.ownerTotalIdeas ?? 0}
-              ownerDetails={data?.idea.user_id}
-            />
-          </WithSkeleton>
-
-          {/* Related Ideas */}
-          <WithSkeleton
-            isLoading={isLoading}
-            skeleton={<RelatedIdeaDetailCardSkeleton />}>
-            {data?.relatedIdeas && data?.relatedIdeas.length > 0 && (
-              <RelatedIdeaDetailCard relatedIdeas={data?.relatedIdeas} />
-            )}
-          </WithSkeleton>
-
-          {/* Collaboration Info */}
-          <WithSkeleton
-            isLoading={isLoading}
-            skeleton={<CollaborationIdeaDetailCardSkeleton />}>
-            {data?.collaboration && (
-              <CollaborationIdeaDetailCard
-                collaboration={data?.collaboration}
-              />
-            )}
-          </WithSkeleton>
-        </div>
-      </div>
-
-      <CreateCollaborationModal
-        isModalOpen={isCreateModalOpen}
-        isCloseModal={() => setIsCreateModalOpen(false)}
-        idea_id={data?.idea._id}
-        projectName={data?.idea.title}
+    return (
+      <IdeaDetailClient 
+        initialData={ideaDetails as any} 
+        initialComments={commentsResponse.rootComments as any} 
       />
-
-      <RequestCollaborationModal
-        isModalOpen={isRequestModalOpen}
-        isCloseModal={() => setIsRequestModalOpen(false)}
-        idea={data?.idea ?? null}
-        collaboration={data?.collaboration ?? null}
-      />
-    </div>
-  );
+    );
+  } catch (error) {
+    console.error(error);
+    return <div className="p-8 text-center text-red-500">Failed to load idea details. It might have been deleted or you don't have access.</div>;
+  }
 }

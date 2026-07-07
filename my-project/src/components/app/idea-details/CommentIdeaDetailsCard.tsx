@@ -11,12 +11,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Lightbulb, ThumbsUp } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import axios from "axios";
-import { useUserStore } from "@/stores/useUserStore";
 import { toast } from "react-toastify";
+import { postComment } from "@/lib/actions/comment.actions";
 import { useEffect, useState } from "react";
 import CommentList from "./CommentList";
 import { CommentType } from "@/lib/types";
+import { useUserStore } from "@/stores/useUserStore";
 
 type CommentIdeaDetailsCard = {
   ideaId: string | null;
@@ -29,7 +29,6 @@ const CommentIdeaDetailsCard = ({
   commentsList,
   commentsCount,
 }: CommentIdeaDetailsCard) => {
-  const token = useUserStore((state) => state.userToken);
   const user = useUserStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const [comments, setComments] = useState<CommentType[]>([]);
@@ -45,24 +44,15 @@ const CommentIdeaDetailsCard = ({
     comment: string,
     parentId: string | null = null
   ) => {
+    if (!ideaId) return;
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        "/api/comment/postComment",
-        {
-          ideaId,
-          text: comment,
-          parentId,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      const newComment = response?.data?.rootComments;
-
-      toast.success(response?.data?.message);
+      await postComment({ ideaId, content: comment, parentId });
+      toast.success("Comment posted successfully");
+      setText("");
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
